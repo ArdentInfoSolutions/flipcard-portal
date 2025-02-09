@@ -1,4 +1,5 @@
-import type { WebItem, SocialMediaPost, UserProfile } from "@/lib/types"
+import type { WebItem, SocialMediaPost } from "../features/feed"
+import type { UserProfile } from "./types"
 
 const API_BASE_URL = "https://api.example.com"
 
@@ -14,6 +15,7 @@ export const api = {
   fetchWebItems: (): Promise<WebItem[]> => fetchJson(`${API_BASE_URL}/web-items`),
 
   fetchSocialMediaPosts: (): Promise<SocialMediaPost[]> => fetchJson(`${API_BASE_URL}/social-media-posts`),
+
 
   likeWebItem: (id: string, userId: string): Promise<WebItem> =>
     fetchJson(`${API_BASE_URL}/web-items/${id}/like`, {

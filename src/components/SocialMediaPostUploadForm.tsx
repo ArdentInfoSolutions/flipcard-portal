@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useAppDispatch, useAppSelector } from "../lib/hooks"
-import { uploadSocialMediaPost } from "../lib/slices/feedSlice"
+import { useAppDispatch, useAppSelector } from "../redux/hooks"
+import { uploadSocialMediaPost } from "../features/feed/index"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"

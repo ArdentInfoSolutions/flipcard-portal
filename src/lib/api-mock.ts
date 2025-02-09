@@ -1,4 +1,5 @@
-import type { WebItem, SocialMediaPost, UserProfile } from "./types"
+import type { UserProfile } from "./types"
+import type { WebItem, SocialMediaPost } from "../features/feed/types"
 
 // Mock data
 const mockWebItems: WebItem[] = [
@@ -6,9 +7,9 @@ const mockWebItems: WebItem[] = [
     id: "1",
     userLogo: "/placeholder.svg?height=50&width=50",
     userName: "TechGuru",
-    title: "Latest Tech Trends",
-    description: "Exploring cutting-edge technologies shaping our future.",
-    url: "https://techguru.com",
+    title: "15 small business website examples for inspiration in 2024",
+    description: "The right website can help a small business thrive. Here are 15 of the best small business website examples on the web.",
+    url: "https://search.google.com/search-console/about",
     likes: 120,
     isLiked: false,
     isBookmarked: false,
@@ -17,8 +18,8 @@ const mockWebItems: WebItem[] = [
     id: "2",
     userLogo: "/placeholder.svg?height=50&width=50",
     userName: "FoodieDelights",
-    title: "Gourmet Recipes",
-    description: "Delicious recipes for food enthusiasts.",
+    title: "Google Sites: Website Creator and Hosting",
+    description: "Create personal or business websites for your team, project or event that look great on any device with Google Sites in Google Workspace.",
     url: "https://foodiedelights.com",
     likes: 85,
     isLiked: true,
@@ -28,9 +29,9 @@ const mockWebItems: WebItem[] = [
     id: "3",
     userLogo: "/placeholder.svg?height=50&width=50",
     userName: "TechGuru",
-    title: "Latest Tech Trends",
-    description: "Exploring cutting-edge technologies shaping our future.",
-    url: "https://techguru.com",
+    title: "15 small business website examples for inspiration in 2024",
+    description: "The right website can help a small business thrive. Here are 15 of the best small business website examples on the web.",
+    url: "https://search.google.com/search-console/about",
     likes: 120,
     isLiked: false,
     isBookmarked: false,
@@ -39,8 +40,8 @@ const mockWebItems: WebItem[] = [
     id: "4",
     userLogo: "/placeholder.svg?height=50&width=50",
     userName: "FoodieDelights",
-    title: "Gourmet Recipes",
-    description: "Delicious recipes for food enthusiasts.",
+    title: "Google Sites: Website Creator and Hosting",
+    description: "Create personal or business websites for your team, project or event that look great on any device with Google Sites in Google Workspace.",
     url: "https://foodiedelights.com",
     likes: 85,
     isLiked: true,
@@ -81,6 +82,28 @@ const mockWebItems: WebItem[] = [
   },
   {
     id: "8",
+    userLogo: "/placeholder.svg?height=50&width=50",
+    userName: "FoodieDelights",
+    title: "Gourmet Recipes",
+    description: "Delicious recipes for food enthusiasts.",
+    url: "https://foodiedelights.com",
+    likes: 85,
+    isLiked: true,
+    isBookmarked: true,
+  },
+  {
+    id: "9",
+    userLogo: "/placeholder.svg?height=50&width=50",
+    userName: "TechGuru",
+    title: "Latest Tech Trends",
+    description: "Exploring cutting-edge technologies shaping our future.",
+    url: "https://techguru.com",
+    likes: 120,
+    isLiked: false,
+    isBookmarked: false,
+  },
+  {
+    id: "10",
     userLogo: "/placeholder.svg?height=50&width=50",
     userName: "FoodieDelights",
     title: "Gourmet Recipes",
@@ -199,5 +222,13 @@ export const api = {
       setTimeout(() => resolve(newPost), 500)
     })
   },
+
+  updateUserProfile: (userId: string, profileData: Partial<UserProfile>): Promise<UserProfile> => {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(mockUserProfile), 500)
+    })
+  },
+
+
 }
 

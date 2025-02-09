@@ -6,10 +6,11 @@ import {
   likeWebItem,
   bookmarkWebItem,
 } from "../features/feed/index";
-import WebItem from "./WebItem";
+import HomePageItem from "./HomePageItem";
 import Link from "next/link";
+import { List } from "@mui/material";
 
-export default function WebItemFeed() {
+export default function HomePageFeed() {
   const dispatch = useAppDispatch();
   const { webItems, loading, error } = useAppSelector((state) => state.feed);
 
@@ -32,29 +33,17 @@ export default function WebItemFeed() {
     <>
       {webItems && 
         (<div>
-      <div className="grid gap-10 md:grid-cols-2 lg:gap-10 ">
-        {webItems.slice(0, 2).map((item, index) => (
-          <div
-            key={item.id}
-            className={"col-span-1"}>
-            <WebItem
-              key={item.id}
-              item={item}
-              onLike={handleLike}
-              onBookmark={handleBookmark}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="mt-10 grid gap-10 md:grid-cols-2 lg:gap-10 xl:grid-cols-3 ">
+        <div className="mt-10 grid gap-10 md:grid-cols-1 lg:gap-10 xl:grid-cols-1 ">
+          <List disablePadding>
         {webItems.slice(2).map((item) => (
-          <WebItem
+          <HomePageItem
             key={item.id}
             item={item}
             onLike={handleLike}
             onBookmark={handleBookmark}
           />
         ))}
+      </List>
       </div>
       <div className="mt-10 flex justify-center">
         <Link

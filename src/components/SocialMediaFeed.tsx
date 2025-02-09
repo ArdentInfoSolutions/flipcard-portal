@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect } from "react"
-import { useAppDispatch, useAppSelector } from "../lib/hooks"
-import { fetchSocialMediaPosts } from "../lib/slices/feedSlice"
+import { useAppDispatch, useAppSelector } from "../redux/hooks"
+import { fetchSocialMediaPosts } from "../features/feed/index"
 import SocialMediaPost from "./SocialMediaPost"
 
 export default function SocialMediaFeed() {

@@ -32,7 +32,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <nav className="bg-gray-800 text-white p-4">
+            {/* <nav className="bg-gray-800 text-white p-4">
               <div className="container mx-auto flex justify-between items-center">
                 <Link href="/" className="text-xl font-bold">
                   Social Media App
@@ -45,7 +45,7 @@ export default function RootLayout({
                   <Link href="/profile">Profile</Link>
                 </div>
               </div>
-            </nav>
+            </nav> */}
             <main className="flex-grow">{children}</main>
           </div>
         </Providers>

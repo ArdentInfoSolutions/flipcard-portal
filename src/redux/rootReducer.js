@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
-import authReducer from "../features/auth/authSlice"
-import feedReducer from "../lib/slices/feedSlice"
+import authReducer from "../features/auth/authReducer"
+import feedReducer from "../features/feed/reducers"
 import userReducer from "../lib/slices/userSlice"
 
 const rootReducer = combineReducers({
