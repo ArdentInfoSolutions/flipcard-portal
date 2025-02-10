@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app"
 import { getAuth } from "firebase/auth"
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: "AIzaSyDKoTjAj4Xytzsr1AQsYEbBTPLayz6KNlM",
+  authDomain: "flipcard-64.firebaseapp.com",
+  projectId: "flipcard-64",
+  storageBucket: "flipcard-64.firebasestorage.app",
+  messagingSenderId: "799858892244",
+  appId: "1:799858892244:web:4d3de687907860f385ca41",
 }
 
 const app = initializeApp(firebaseConfig)
