@@ -5,8 +5,13 @@
   "tsx": true,
   "tailwind": {
     "config": "tailwind.config.ts",
+<<<<<<< HEAD
     "css": "src/app/globals.css",
     "baseColor": "slate",
+=======
+    "css": "src/styles/globals.css",
+    "baseColor": "neutral",
+>>>>>>> fbab2be (commit code)
     "cssVariables": true,
     "prefix": ""
   },

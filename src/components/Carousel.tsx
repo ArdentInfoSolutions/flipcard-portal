@@ -1,7 +1,24 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 
 const Carousel = () => {
+=======
+"use client";
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
+import type { PostItem as PostItemType } from "../lib/types"
+
+
+interface PostItemProps {
+  post: PostItemType
+  onLike?: (id: string) => void
+  onBookmark?: (id: string) => void
+}
+
+export function Carousel({ post, onLike, onBookmark }: PostItemProps) {
+>>>>>>> fbab2be (commit code)
   const images = [
     "/images/image1.jpg",
     "/images/image2.jpg",
@@ -52,7 +69,25 @@ const Carousel = () => {
   };
 
   return (
+<<<<<<< HEAD
     <div className="relative w-full h-screen overflow-hidden bg-black">
+=======
+    <div className="bg-white rounded-lg">
+      <div className="p-4">
+              <div className="flex items-center mb-2">
+                <Image
+                  src={post.userAvatar || "/placeholder.svg"}
+                  alt={post.username}
+                  width={40}
+                  height={40}
+                  className="rounded-full mr-2"
+                />
+                <span className="font-semibold">{post.username}</span>
+              </div>
+              <p className="text-sm text-gray-700 mb-2">{post.content}</p>
+            </div>
+      <div className="relative w-full h-full overflow-hidden bg-black">
+>>>>>>> fbab2be (commit code)
       {/* Indicators on top */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
         {images.map((_, index) => (
@@ -110,8 +145,15 @@ const Carousel = () => {
       >
         &#8594;
       </button>
+<<<<<<< HEAD
     </div>
   );
 };
 
 export default Carousel;
+=======
+      </div>
+    </div>
+  );
+};
+>>>>>>> fbab2be (commit code)
