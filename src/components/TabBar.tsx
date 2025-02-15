@@ -19,7 +19,7 @@ export default function TabBar() {
   }
 
   return (
-    <div className="fixed md:static bottom-0 left-0 right-0 bg-white border-t md:border-t-0 md:border-b z-50">
+    <div className="fixed md:static bottom-0 left-0 right-0 bg-white border-t md:border-t-0 md:border-b">
       <Tabs value={currentTab} onChange={handleChange} centered className="min-h-[60px]">
         <Tab icon={<Rss className="h-4 w-4" />} label="Feed" iconPosition="start" className="min-h-[60px]" />
         <Tab icon={<ImageIcon className="h-4 w-4" />} label="Images" iconPosition="start" className="min-h-[60px]" />

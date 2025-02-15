@@ -4,8 +4,6 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
-<<<<<<< HEAD
-=======
 
 
 export function formatDate(date: Date): string {
@@ -16,4 +14,3 @@ export function formatDate(date: Date): string {
   }).format(date)
 }
 
->>>>>>> fbab2be (commit code)

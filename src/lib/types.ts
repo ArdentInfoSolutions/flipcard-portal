@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-
-  export interface UserProfile {
-    id: string
-    name: string
-    email: string
-    bio: string
-    photo: string
-    place: string
-    interests: string[]
-    followers: string[]
-    following: string[]
-  }
-  
-  
-=======
 export interface UserProfile {
   id: string
   name: string
@@ -76,4 +60,3 @@ export interface PostItemState {
   error: string | null
 }
 
->>>>>>> fbab2be (commit code)

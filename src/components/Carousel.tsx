@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
-
-const Carousel = () => {
-=======
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
@@ -18,7 +12,6 @@ interface PostItemProps {
 }
 
 export function Carousel({ post, onLike, onBookmark }: PostItemProps) {
->>>>>>> fbab2be (commit code)
   const images = [
     "/images/image1.jpg",
     "/images/image2.jpg",
@@ -69,9 +62,6 @@ export function Carousel({ post, onLike, onBookmark }: PostItemProps) {
   };
 
   return (
-<<<<<<< HEAD
-    <div className="relative w-full h-screen overflow-hidden bg-black">
-=======
     <div className="bg-white rounded-lg">
       <div className="p-4">
               <div className="flex items-center mb-2">
@@ -87,7 +77,6 @@ export function Carousel({ post, onLike, onBookmark }: PostItemProps) {
               <p className="text-sm text-gray-700 mb-2">{post.content}</p>
             </div>
       <div className="relative w-full h-full overflow-hidden bg-black">
->>>>>>> fbab2be (commit code)
       {/* Indicators on top */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
         {images.map((_, index) => (
@@ -145,15 +134,7 @@ export function Carousel({ post, onLike, onBookmark }: PostItemProps) {
       >
         &#8594;
       </button>
-<<<<<<< HEAD
-    </div>
-  );
-};
-
-export default Carousel;
-=======
       </div>
     </div>
   );
 };
->>>>>>> fbab2be (commit code)
