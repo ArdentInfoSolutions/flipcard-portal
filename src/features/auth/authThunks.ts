@@ -3,7 +3,8 @@ import { signIn, signOut } from "next-auth/react"
 import { fetchUserProfile as apiFetchUserProfile } from "../../lib/api"
 import type { UserProfile } from "../../lib/types"
 
-export const loginUser = createAsyncThunk<UserProfile, void>("auth/login", async (_, { rejectWithValue }) => {
+export const loginUser = createAsyncThunk<UserProfile, void>(
+  "auth/login", async (_, { rejectWithValue }) => {
   try {
     const result = await signIn("google", { redirect: false })
     if (result?.error) {

@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Next.js",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "node",
+        "args": ["--inspect", ".next/standalone/server.js"],
+        "cwd": "${workspaceFolder}",
+        "protocol": "inspector",
+        "sourceMaps": true,
+        "console": "integratedTerminal",
+        "env": {
+          "NODE_ENV": "development"
+        }
+      },
+      {
+        "name": "Debug Next.js (Attach)",
+        "type": "node",
+        "request": "attach",
+        "port": 9229,
+        "restart": true,
+        "protocol": "inspector",
+        "sourceMaps": true,
+        "outFiles": ["${workspaceFolder}/.next/**/*.js"],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Debug Chrome",
+        "type": "chrome",
+        "request": "launch",
+        "url": "http://localhost:3000",
+        "webRoot": "${workspaceFolder}",
+        "sourceMapPathOverrides": {
+        "webpack://_N_E/*": "${workspaceFolder}/*",
+        "file:///*": "${workspaceFolder}/*"
+      }
+      }
+    ]
+  }
+  

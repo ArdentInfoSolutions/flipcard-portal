@@ -3,7 +3,7 @@
 import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { Button } from "@/components/ui/button"
+import { FcGoogle } from "react-icons/fc"
 
 export default function LoginPage() {
   const { data: session } = useSession()
@@ -16,9 +16,19 @@ export default function LoginPage() {
   }, [session, router])
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-3xl font-bold mb-8">Login to Flipcard Portal</h1>
-      <Button onClick={() => signIn("google")}>Sign in with Google</Button>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white shadow-lg rounded-xl p-8 w-96 text-center">
+        <h2 className="text-2xl font-semibold mb-6">Welcome Back</h2>
+        <p className="text-gray-600 mb-4">Sign in to continue</p>
+
+        <button
+          onClick={() => signIn("google")}
+          className="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-100 transition"
+        >
+          <FcGoogle className="text-xl mr-2" />
+          Sign in with Google
+        </button>
+      </div>
     </div>
   )
 }

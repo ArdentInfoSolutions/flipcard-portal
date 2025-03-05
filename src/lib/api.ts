@@ -10,7 +10,7 @@ export async function fetchUserProfile(userId: string): Promise<UserProfile> {
     name: "John Doe",
     email: "john.doe@example.com",
     bio: "I love coding and sharing interesting websites! Always learning and exploring new technologies.",
-    photo: "/placeholder.svg",
+    photo: "/placeholder-user.png",
     place: "San Francisco, CA",
     interests: ["Web Development", "AI", "Open Source", "UI/UX Design", "Cloud Computing"],
     followers: ["user2", "user3", "user4", "user5", "user6"],
@@ -19,7 +19,6 @@ export async function fetchUserProfile(userId: string): Promise<UserProfile> {
     bookmarks: ["post3", "webitem3", "post4", "webitem4"],
     shares: ["post5", "webitem5"],
     posts: ["post1", "post2", "post3"],
-    webItems: ["webitem1", "webitem2", "webitem3"],
   }
 }
 

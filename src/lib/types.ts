@@ -1,3 +1,29 @@
+export interface LinkItem {
+  id: number
+  title: string | null
+  url: string
+}
+
+export interface PostItem {
+  id: string
+  userLogo: string
+  userName: string
+  title: string
+  promo: string
+  description: string
+  url: string
+  categories: string[]
+  images: LinkItem[]
+  pages: LinkItem[]
+  videos: LinkItem[]
+  showIn: "web" | "images" | "videos"
+  likes: number|null
+  isLiked: boolean|null
+  bookmarks: number|null
+  isBookmarked: boolean|null
+  createdAt: string
+}
+
 export interface UserProfile {
   id: string
   name: string
@@ -12,7 +38,6 @@ export interface UserProfile {
   bookmarks: string[]
   shares: string[]
   posts: string[]
-  webItems: string[]
 }
 
 export interface AuthState {
@@ -22,36 +47,10 @@ export interface AuthState {
   error: string | null
 }
 
-export interface WebItem {
-  id: string
-  userLogo: string
-  userName: string
-  title: string
-  description: string
-  url: string
-  likes: number
-  isLiked: boolean
-  isBookmarked: boolean
-}
-
 export interface FeedState {
-  webItems: WebItem[]
+  posts: PostItem[]
   loading: boolean
   error: string | null
-}
-
-export interface PostItem {
-  id: string
-  userId: string
-  username: string
-  userAvatar: string
-  content: string
-  images: string[]
-  likesCount: number
-  isLiked: boolean
-  bookmarksCount: number
-  isBookmarked: boolean
-  createdAt: string
 }
 
 export interface PostItemState {
@@ -60,3 +59,18 @@ export interface PostItemState {
   error: string | null
 }
 
+export interface LikePostState {
+  loading: boolean;
+  error: string | null;
+  likedPosts: {
+    [postId: string]: { isLiked: boolean, likes: number }
+  }; // Object to track liked post
+}
+
+export interface BookmarkPostState {
+  loading: boolean;
+  error: string | null;
+  bookmarkedPosts: {
+    [postId: string]: { isBookmarked: boolean, bookmarks: number }
+  }; // Object to track bookmarked post
+}

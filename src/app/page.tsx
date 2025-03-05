@@ -1,7 +1,7 @@
 "use client"
 
-import TabBar from "../components/TabBar"
-import { WebItemFeed } from "../components/WebItemFeed"
+import TabBar from "../components/common/TabBar"
+import { PostItemFeed } from "../components/page-components/all-feed/PostItemFeed"
 
 export default function Home() {
   return (
@@ -9,7 +9,7 @@ export default function Home() {
       <div className="hidden md:block w-full">
         <TabBar />
       </div>
-      <WebItemFeed />
+      <PostItemFeed />
       <div className="block md:hidden">
         <TabBar />
       </div>

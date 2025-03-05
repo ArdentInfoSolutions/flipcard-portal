@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit"
 import type { FeedState } from "../../lib/types"
-import { fetchWebItems } from "./feedThunks"
+import { fetchAllPostsFeed } from "./feedThunks"
 
 const initialState: FeedState = {
-  webItems: [],
+  posts: [],
   loading: false,
   error: null,
 }
@@ -14,17 +14,17 @@ const feedSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchWebItems.pending, (state) => {
+      .addCase(fetchAllPostsFeed.pending, (state) => {
         state.loading = true
         state.error = null
       })
-      .addCase(fetchWebItems.fulfilled, (state, action) => {
-        state.webItems = action.payload
+      .addCase(fetchAllPostsFeed.fulfilled, (state, action) => {
+        state.posts = action.payload
         state.loading = false
       })
-      .addCase(fetchWebItems.rejected, (state, action) => {
+      .addCase(fetchAllPostsFeed.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message || "Failed to fetch web items"
+        state.error = action.error.message || "Failed to fetch all posts items"
       })
   },
 })

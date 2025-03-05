@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation"
 import { useAppDispatch, useAppSelector } from "../../redux/hooks"
 import { fetchUserProfile } from "../../features/auth/authThunks"
 import { selectUser, selectAuthLoading, selectAuthError } from "../../features/auth/authSelectors"
-import { ProfileTabs } from "@/components/profile/ProfileTabs"
-import { FollowDialog } from "@/components/profile/FollowDialog"
+import { ProfileTabs } from "@/components/page-components/profile/ProfileTabs"
+import { FollowDialog } from "@/components/page-components/profile/FollowDialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Pencil } from "lucide-react"
+import { Pencil, PlusIcon, TvIcon } from "lucide-react"
+import { PostItemFeed } from "@/components/page-components/all-feed/PostItemFeed"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export default function ProfilePage() {
   const { data: session } = useSession()
@@ -29,6 +31,7 @@ export default function ProfilePage() {
     }
   }, [session, router, dispatch, user])
 
+
   if (loading) return <div>Loading...</div>
   if (error) return <div>Error: {error}</div>
   if (!user) return null
@@ -36,47 +39,24 @@ export default function ProfilePage() {
   const mockFollowers = user.followers.map((id) => ({
     id,
     name: `User ${id}`,
-    photo: "/placeholder.svg",
+    photo: "/placeholder-user.png",
     isFollowing: Math.random() > 0.5,
   }))
 
   const mockFollowing = user.following.map((id) => ({
     id,
     name: `User ${id}`,
-    photo: "/placeholder.svg",
+    photo: "/placeholder-user.png",
     isFollowing: true,
   }))
 
-  // Mock data for tabs
-  const mockWebItems = user.webItems.map((id) => ({
-    id,
-    userLogo: user.photo,
-    userName: user.name,
-    title: `Web Item ${id}`,
-    description: "This is a sample web item description",
-    url: "https://example.com",
-    likes: Math.floor(Math.random() * 100),
-    isLiked: false,
-    isBookmarked: false,
-  }))
-
-  const mockPosts = user.posts.map((id) => ({
-    id,
-    userId: user.id,
-    username: user.name,
-    userAvatar: user.photo,
-    content: `Post ${id} content`,
-    images: ["/placeholder.svg"],
-    likesCount: Math.floor(Math.random() * 100),
-    isLiked: false,
-    bookmarksCount: Math.floor(Math.random() * 20),
-    isBookmarked: false,
-    createdAt: new Date().toISOString(),
-  }))
+  const handleAction = (type: string) => {
+    router.push(`/create/${type}`);
+  };
 
   return (
     <div className="container mx-auto p-4 w-full max-w-3xl">
-      <Card>
+      <Card className="bg-white">
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-4">
@@ -90,13 +70,13 @@ export default function ProfilePage() {
                 <p className="text-muted-foreground">{user.place}</p>
               </div>
             </div>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" onClick={() => router.push("/profile/edit")}>
               <Pencil className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="spaces-y-4">
             <p>{user.bio}</p>
             <div className="flex gap-4">
               <FollowDialog
@@ -123,12 +103,36 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      <ProfileTabs
+      {/* <ProfileTabs
         webItems={mockWebItems}
         posts={mockPosts}
         likedItems={[...mockWebItems.slice(0, 2), ...mockPosts.slice(0, 2)]}
         bookmarkedItems={[...mockWebItems.slice(2, 4), ...mockPosts.slice(2, 4)]}
-      />
+      /> */}
+
+      <div className="mt-4">
+      <div className="flex items-stretch justify-between gap-10">
+          <h2 className="text-lg font-bold py-4">My Posts</h2>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="lg"> <PlusIcon /> Create Post</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleAction('web')}>
+                {"Web Post"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAction('images')}>
+                {"Image Post"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleAction('videos')}>
+                {"Video Post"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          </div>
+        <PostItemFeed />
+        </div>
     </div>
   )
 }
