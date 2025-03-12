@@ -74,3 +74,15 @@ export interface BookmarkPostState {
     [postId: string]: { isBookmarked: boolean, bookmarks: number }
   }; // Object to track bookmarked post
 }
+// existing exports
+
+export interface WebItem {
+  id: string
+  url: string
+  title: string
+  description: string
+  userName: string
+  userLogo?: string
+  isLiked: boolean
+  isBookmarked: boolean
+}
