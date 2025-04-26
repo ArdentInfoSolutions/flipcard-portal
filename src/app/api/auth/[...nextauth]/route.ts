@@ -13,19 +13,20 @@ declare module "next-auth" {
 const handler = NextAuth({
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID!,  // Loaded from env
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,  // Loaded from env
+     
     }),
   ],
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub!
+        session.user.id = token.sub!;
       }
-      return session
+      return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,  // Loaded from env
 })
 
-export { handler as GET, handler as POST }
-
+export { handler as GET, handler as POST };

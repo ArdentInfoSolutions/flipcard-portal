@@ -16,13 +16,7 @@ export default function CreatePostPage() {
   
   return (
     <div className="container mx-auto py-8 px-4">
-      {/* Display Image */}
-      <Image 
-        src={imageMap[type]} 
-        alt={`${type} post banner`} 
-        fill
-        className="w-full h-48 object-cover rounded-lg mb-6"
-      />
+
       <PostItemForm showIn={type} />
     </div>
   )

@@ -5,7 +5,7 @@ export interface LinkItem {
 }
 
 export interface PostItem {
-  id: string
+  id: string;
   userLogo: string
   userName: string
   title: string

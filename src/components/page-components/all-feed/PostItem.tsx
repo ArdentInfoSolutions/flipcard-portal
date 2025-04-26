@@ -21,11 +21,11 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
   const { data: session } = useSession()
   const router = useRouter()
   
-  const isLiked = useAppSelector((state) => selectIsPostLiked(state, item.id, item.isLiked));
-  const likes = useAppSelector((state) => selectPostLikes(state, item.id, item.likes));
+  const isLiked = useAppSelector((state) => selectIsPostLiked(state, item.id, item.isLiked ?? false));
+  const likes = useAppSelector((state) => selectPostLikes(state, item.id, item.likes ?? 0));
 
-  const isBookmarked = useAppSelector((state) => selectIsBookmarked(state, item.id, item.isBookmarked));
-  const bookmarks = useAppSelector((state) => selectBookmarks(state, item.id, item.bookmarks));
+  const isBookmarked = useAppSelector((state) => selectIsBookmarked(state, item.id, item.isBookmarked ?? false));
+  const bookmarks = useAppSelector((state) => selectBookmarks(state, item.id, item.bookmarks ?? 0));
 
   const handleAction = (action: () => void) => {
     if (session) {

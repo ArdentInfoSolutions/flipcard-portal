@@ -9,7 +9,7 @@ export default function NavBar() {
   const { data: session } = useSession()
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-white border-b">
+    <nav className={"flex justify-between items-center p-4 border-b"}>
       <div className="flex items-center">
         <Image
           src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo.jpg-3bwoBW07eVo16olC2qW6v8UxtYYdUL.jpeg"

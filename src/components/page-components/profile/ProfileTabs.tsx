@@ -2,6 +2,8 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { WebItem } from "../web-feed/WebItem"
+
+import { PostItem } from "@/components/page-components/all-feed/PostItem" // Ensure this path is correct or update it to the correct path
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { PostItem as PostItemType } from "@/lib/types"
 
@@ -19,11 +21,12 @@ export function ProfileTabs({ webItems, posts, likedItems, bookmarkedItems }: Pr
 
   const renderItems = (items: PostItemType[]) => (
     <div className="space-y-4">
-      {items.map((item) =>
+      {items.map((item: PostItemType, index: number) =>
         isPostItem(item) ? (
-          <div key={item.id} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <PostItem
-              post={item}
+              key={(item as PostItemType).id}
+              item={item}
               onLike={(id) => console.log("Like:", id)}
               onBookmark={(id) => console.log("Bookmark:", id)}
             />

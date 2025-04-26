@@ -28,18 +28,29 @@ export function WebItemFeed() {
       </div>
     )
   }
+  // handle linke and bookmark
+  const handleLike = (id: string) => {
+     dispatch
+  }
 
+  const handleBookmark = (id: string) => {
+    dispatch(bookmarkPost(id))  // Dispatch an action to bookmark the post
+  }
   return (
     <div className="w-full max-w-3xl mx-auto divide-y">
       {postItems.map((item) => (
         <WebItem
           key={item.id}
-          item={item}
+          item={{ ...item, isLiked: item.isLiked ?? false, isBookmarked: item.isBookmarked ?? false }}
           onLike={(id) => console.log("Like:", id)}
           onBookmark={(id) => console.log("Bookmark:", id)}
         />
       ))}
     </div>
   )
+}
+
+function bookmarkPost(id: string): any {
+  throw new Error("Function not implemented.")
 }
 
