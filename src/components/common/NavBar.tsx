@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useSession, signOut } from "next-auth/react"
 import ThemeSwitcher from "./ThemeSwitcher";
 
+//create navbar component with logo, title, and login/logout button
 export default function NavBar() {
   const { data: session } = useSession()
 
