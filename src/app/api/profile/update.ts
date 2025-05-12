@@ -41,8 +41,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             // Return the updated user data
             return res.status(200).json(updatedUser[0]);
         } catch (error) {
+            console.log("Testing change");
+
             console.error("Error updating profile:", error);
             return res.status(500).json({ message: "Error updating profile" });
+            
         }
     } else {
         res.status(405).json({ message: "Method not allowed" });
