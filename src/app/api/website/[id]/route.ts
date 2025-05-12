@@ -29,10 +29,12 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
             tags: website.tags || null,
          
             eventImage: eventImage || null,  // Provide eventImage separately if needed
+            eventLink: website.event_link || null,
             whatsNew: website.whats_new || null,
             phone: website.phone || null,
             email: website.email || null,
             address: website.address || null,
+            googleMapsLink: website.google_maps_link || null,
             coverPhoto: website.cover_photo || null,
             logo: website.logo || null,
             images: website.images || [],

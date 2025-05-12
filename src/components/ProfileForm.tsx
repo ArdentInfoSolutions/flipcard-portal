@@ -9,6 +9,7 @@ interface ProfileFormProps {
     photo: string
     place: string
     interests: string[]
+    titleAndDetails?: {title: string; details: string}[]
   }
   onSubmit: (profileData: Partial<ProfileFormProps["profile"]>) => void
 }

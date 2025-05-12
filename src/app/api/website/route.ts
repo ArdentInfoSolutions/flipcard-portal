@@ -76,6 +76,8 @@ export async function POST(req: Request) {
         const address = formData.get("address") as string;
         const topPages = formData.get("topPages") as string;
         const parsedTopPages = topPages ? JSON.parse(topPages) : [];
+        const eventLink = formData.get("eventLink") as string;
+        const googleMapsLink = formData.get("googleMapsLink") as string;
 
         // File fields
         const coverPhoto = formData.get("coverPhoto") as File;
@@ -108,7 +110,7 @@ export async function POST(req: Request) {
 
         // Insert into database
         const result = await query(
-        `INSERT INTO website_details
+            `INSERT INTO website_details
   (
     website_name,
     overview,
@@ -123,10 +125,11 @@ export async function POST(req: Request) {
     cover_photo,
     logo,
     images,
-    event_image
-
+    event_image,
+    event_link,  -- <-- Add comma here
+    google_maps_link
   )
-  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
   RETURNING id`,
             [
                 websiteName,
@@ -143,10 +146,11 @@ export async function POST(req: Request) {
                 logoUrl,
                 `{${imageUrls.map((url) => `"${url}"`).join(",")}}`,
                 eventImageUrl,
-                
-                
+                eventLink,
+                googleMapsLink
             ]
         );
+
         
 
 
