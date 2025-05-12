@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { ExternalLinkIcon } from "lucide-react";
-import { ChevronRightIcon } from "lucide-react"; // Use this instead of useRouter
+import { ChevronRightIcon } from "lucide-react";
 
 interface WebsiteData {
     websiteName: string;
@@ -11,6 +11,7 @@ interface WebsiteData {
     about: string;
     tags?: string;
     eventImage?: string;
+    eventLink?: string;
     whatsNew?: string;
     phone?: string;
     email?: string;
@@ -40,6 +41,7 @@ export default function PreviewPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [scrolling, setScrolling] = useState(false); // State to control scrolling
+
 
     useEffect(() => {
         if (!id) return; // Don't fetch if id is not yet available
@@ -74,6 +76,7 @@ export default function PreviewPage() {
         about,
         tags = "",
         eventImage,
+        eventLink,
         whatsNew,
         phone,
         email,
@@ -122,7 +125,7 @@ export default function PreviewPage() {
                             Visit <ExternalLinkIcon size={16} />
                         </button>
                         <button className=" text-green px-4 py-2 rounded">Share</button>
-                        <button className=" text-green px-4 py-2 rounded">Add to wishlist</button>
+
                     </div>
                 </div>
             </div>
@@ -142,7 +145,7 @@ export default function PreviewPage() {
                                     <div key={i} className="flex-shrink-0">
                                         <img
                                             src={img}
-                                            alt={`Image ${i + 1}`}
+                                            alt={`Image ${i + 1} `}
                                             className="w-32 h-32 rounded-lg object-cover border"
                                         />
                                     </div>
@@ -159,15 +162,7 @@ export default function PreviewPage() {
                                 </button>
 
                             )}
-                            <style jsx global>{`
-                                #image-container::-webkit-scrollbar {
-                                 display: none;
-                                     }
-                                 #image-container {
-                                   -ms-overflow-style: none; /* Hide scrollbar in Internet Explorer */
-                                       scrollbar-width: none; /* Hide scrollbar in Firefox */
-                }
-            `}</style>
+
                         </div>
 
 
@@ -200,25 +195,39 @@ export default function PreviewPage() {
 
 
                     {/* Events Section */}
-                  
+
                     {/* Events Section */}
                     {eventImage ? (
                         <div className="relative w-full h-[150px]">
                             <h2 className="text-xl font-semibold mb-1">Event and Offers</h2>
-                            <img
-                                src={eventImage}   // ✅ Directly use eventImage (no [0], no .event_image)
-                                alt="Event Image"
-                                className="w-full h-full object-cover rounded-lg"
-                            />
+                            {eventLink ? (
+                                <a
+                                    href={
+                                        eventLink.startsWith('http')
+                                            ? eventLink
+                                            : `https://${eventLink}`
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full h-full"
+                                >
+                                    <img
+                                        src={eventImage}
+                                        alt="Event Image"
+                                        className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition"
+                                    />
+                                </a>
+                            ) : (
+                                <img
+                                    src={eventImage}
+                                    alt="Event Image"
+                                    className="w-full h-full object-cover rounded-lg"
+                                />
+                            )}
                         </div>
                     ) : (
                         <div className="text-sm text-yellow-800">No event image available.</div>
                     )}
-
-
-
-                   
-
 
                     {/* What's New */}
                     {whatsNew && (
@@ -245,21 +254,37 @@ export default function PreviewPage() {
                         {/* Phone */}
                         <div className="flex items-center gap-3 mb-3">
                             <span className="text-gray-600 text-lg">
-                                <i className="fas fa-phone-alt"></i></span>
+                                <i className="fas fa-phone-alt"></i>
+                            </span>
                             <div className="flex flex-col">
                                 <p className="text-sm font-medium text-gray-700">📞 Phone number</p>
-                                <p className="text-sm text-gray-800 pl-6">{phone}</p>
+                                <a
+                                    href={`tel:${phone?.trim()}`}
+                                    className="text-sm text-blue-600 hover:underline pl-6"
+                                >
+                                    {phone}
+                                </a>
+
                             </div>
                         </div>
 
                         {/* Email */}
                         <div className="flex items-start gap-3 mb-3">
-                            <span className="text-gray-600 text-lg"><i className="fas fa-envelope"></i></span>
+                            <span className="text-gray-600 text-lg">
+                                <i className="fas fa-envelope"></i>
+                            </span>
                             <div>
-                                <p className="text-sm font-medium text-gray-700">📧     Support email</p>
-                                <p className="text-sm text-gray-800 pl-6">{email}</p>
+                                <p className="text-sm font-medium text-gray-700">📧 Support email</p>
+                                <a
+                                    href={`mailto:${email?.trim()}`}
+                                    className="text-sm text-blue-600 hover:underline pl-6"
+                                >
+                                    {email}
+                                </a>
+
                             </div>
                         </div>
+
 
                         {/* Privacy Policy */}
                         <div className="flex items-start gap-3 mb-3">
@@ -307,4 +332,6 @@ export default function PreviewPage() {
             </div>
         </div>
     );
+
+
 }

@@ -38,6 +38,7 @@ export interface UserProfile {
   bookmarks: string[]
   shares: string[]
   posts: string[]
+  about: { title: string; details: string }[]
 }
 
 export interface AuthState {
