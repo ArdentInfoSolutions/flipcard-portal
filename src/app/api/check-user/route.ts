@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ exists: false });
     }
 
-    const result = await query("SELECT * FROM users WHERE uuid = $1", [userId]);
+    const result = await query("SELECT * FROM users WHERE userId = $1", [userId]);
     return NextResponse.json({ exists: result.length > 0 });
 }
 

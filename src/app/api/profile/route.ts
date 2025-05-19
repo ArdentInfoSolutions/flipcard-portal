@@ -108,7 +108,47 @@ export async function PUT(req: NextRequest) {
     }
 }
 
-  
+
+export async function GET(req: NextRequest) {
+    try {
+        const userId = req.nextUrl.searchParams.get("userId");
+
+        if (!userId) {
+            return NextResponse.json({ message: "Missing userId" }, { status: 400 });
+        }
+
+        const result = await query("SELECT userid, name, email, bio, photo, place, interests, about FROM users WHERE userid = $1", [userId]);
+
+        if (result.length === 0) {
+            return NextResponse.json({ message: "User not found" }, { status: 404 });
+        }
+
+        const user = result[0];
+
+        // If about is stored as a JSON string in DB, parse it
+        let parsedAbout = null;
+        try {
+            parsedAbout = typeof user.about === "string" ? JSON.parse(user.about) : user.about;
+        } catch {
+            parsedAbout = user.about;
+        }
+
+        return NextResponse.json({
+            userId: user.userid,
+            name: user.name,
+            email: user.email,
+            bio: user.bio,
+            photo: user.photo,
+            place: user.place,
+            interests: user.interests,
+            about: parsedAbout,
+        });
+    } catch (error) {
+        console.error("GET Error:", error);
+        return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+    }
+}
+
 
 // export async function PUT(req: NextRequest) {
 //     try {

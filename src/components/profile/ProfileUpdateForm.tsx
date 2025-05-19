@@ -42,17 +42,39 @@ export default function ProfileUpdateForm() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // function to fetch user data from get api
+  async function fetchUserProfile(userId: string) {
+    try {
+      const res = await fetch(`/api/profile?userId=${userId}`);
+      if (!res.ok) throw new Error("Failed to fetch profile");
+      const userData = await res.json();
+      return userData;
+    } catch (error) {
+      console.error("Fetch profile error:", error);
+      return null;
+    }
+  }
+
   // Populate form when session is loaded and authenticated
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
-      setFormData((prev) => ({
-        ...prev,
-        userId: session.user.id,
-        name: session.user.name || "",
-        email: session.user.email || "",
-        photo: session.user.image || "",
-        // other fields could be fetched from your backend if needed
-      }));
+      fetchUserProfile(session.user.id).then((userData) => {
+        if (userData) {
+          setFormData((prev) => ({
+            ...prev,
+            userId: session.user.id,
+            name: userData.name || "",
+            email: session.user.email || "",
+            photo: userData.image || "",
+            place: userData.place || "",
+            bio: userData.bio || "",
+            interests: userData.interests || [],
+            about: userData.about || [],
+
+            // other fields could be fetched from your backend if needed
+          }));
+        }
+      });
     }
   }, [session, status]);
 
@@ -121,7 +143,6 @@ export default function ProfileUpdateForm() {
       fileInputRef.current.click();
     }
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -162,16 +183,81 @@ export default function ProfileUpdateForm() {
 
       alert("✅ Profile updated successfully!");
 
-      setFormData((prev) => ({
-        ...prev,
-        photo: data.photo || prev.photo,
-      }));
+      // Refetch profile to sync all updated fields
+      const updatedUserData = await fetchUserProfile(session.user.id);
+      if (updatedUserData) {
+        setFormData({
+          userId: session.user.id,
+          name: updatedUserData.name || "",
+          email: updatedUserData.email || session.user.email || "",
+          bio: updatedUserData.bio || "",
+          photo: updatedUserData.photo || (base64Photo || formData.photo),
+          place: updatedUserData.place || "",
+          interests: updatedUserData.interests || [],
+          about: updatedUserData.about || [],
+        });
+        setSelectedFile(null);
+        setPhotoPreview(null);
+      }
     } catch (error: any) {
       alert(`❌ Update failed: ${error.message || error}`);
     } finally {
       setIsSubmitting(false);
     }
   };
+  
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   if (!session?.user?.id) {
+  //     alert("User ID missing. Please log in.");
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true);
+
+  //   try {
+  //     let base64Photo: string | null = null;
+
+  //     if (selectedFile) {
+  //       base64Photo = await new Promise<string>((resolve, reject) => {
+  //         const reader = new FileReader();
+  //         reader.onloadend = () => resolve(reader.result as string);
+  //         reader.onerror = () => reject(new Error("Failed to read file"));
+  //         reader.readAsDataURL(selectedFile);
+  //       });
+  //     }
+
+  //     const payload = {
+  //       ...formData,
+  //       userId: session.user.id,
+  //       photo: base64Photo || formData.photo,
+        
+  //     };
+
+  //     const response = await fetch("/api/profile", {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(payload),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (!response.ok) throw new Error(data.message || "Failed to update profile");
+
+  //     alert("✅ Profile updated successfully!");
+
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       photo: data.photo || prev.photo,
+  //     }));
+  //   } catch (error: any) {
+  //     alert(`❌ Update failed: ${error.message || error}`);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
 
   
   function handleLocationSelect(location: string): void {
@@ -212,8 +298,18 @@ export default function ProfileUpdateForm() {
           <div className="space-y-4">
             <div>
               <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" value={formData.name || ""} onChange={handleChange} required />
+              <Input
+                id="name"
+                name="name"
+                value={formData.name || ""}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
             </div>
+
+            {/* <div>
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" name="name" value={formData.name || ""} onChange={handleChange} required />
+            </div> */}
 
             <div>
               <Label htmlFor="email">Email</Label>
@@ -222,8 +318,7 @@ export default function ProfileUpdateForm() {
                 name="email"
                 type="email"
                 value={formData.email || ""}
-                onChange={handleChange}
-                required
+                disabled
               />
             </div>
 
