@@ -1,161 +1,186 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
+import { useState, useRef, useEffect, use } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { X, Plus, Camera } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { selectUser } from "@/features/auth/authSelectors";
+import type { UserProfile } from "@/lib/types";
+import { LocationSearch } from "@/components/profile/LocationSearch";
 
-import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { X, Plus, Camera } from "lucide-react"
-import { useAppDispatch, useAppSelector } from "@/redux/hooks"
-import { selectUser } from "@/features/auth/authSelectors"
-import type { UserProfile } from "@/lib/types"
-import { LocationSearch } from "@/components/profile/LocationSearch"
 
 export default function ProfileUpdateForm() {
-  const router = useRouter()
-  const dispatch = useAppDispatch()
-  const currentUser = useAppSelector(selectUser)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<Partial<UserProfile>>({
+    userId: "",
     name: "",
     email: "",
     bio: "",
     photo: "",
     place: "",
     interests: [],
-    about: [], // Added for Title and Detail fields
-  })
+    about: [],
+  });
 
-  const [newInterest, setNewInterest] = useState("")
-  const [newTitle, setNewTitle] = useState("")
-  const [newDetail, setNewDetail] = useState("")
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [newInterest, setNewInterest] = useState("");
+  const [newTitle, setNewTitle] = useState("");
+  const [newDetail, setNewDetail] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Load current user data when available
+  // Populate form when session is loaded and authenticated
   useEffect(() => {
-    if (currentUser) {
-      setFormData({
-        name: currentUser.name,
-        email: currentUser.email,
-        bio: currentUser.bio,
-        photo: currentUser.photo,
-        place: currentUser.place,
-        interests: [...currentUser.interests],
-        about: currentUser.about || [], // Set existing titles and details
-      })
+    if (status === "authenticated" && session?.user) {
+      setFormData((prev) => ({
+        ...prev,
+        userId: session.user.id,
+        name: session.user.name || "",
+        email: session.user.email || "",
+        photo: session.user.image || "",
+        // other fields could be fetched from your backend if needed
+      }));
     }
-  }, [currentUser])
+  }, [session, status]);
+
+  // Handle loading and unauthenticated UI
+  if (status === "loading") {
+    return <p>Loading session...</p>;
+  }
+  if (status === "unauthenticated" || !session) {
+    return <p>Please log in to update your profile.</p>;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleLocationSelect = (location: string) => {
-    setFormData((prev) => ({ ...prev, place: location }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const addInterest = () => {
     if (newInterest.trim() !== "" && formData.interests) {
       setFormData((prev) => ({
         ...prev,
         interests: [...(prev.interests || []), newInterest.trim()],
-      }))
-      setNewInterest("")
+      }));
+      setNewInterest("");
     }
-  }
+  };
 
   const removeInterest = (index: number) => {
     if (formData.interests) {
       setFormData((prev) => ({
         ...prev,
         interests: prev.interests?.filter((_, i) => i !== index),
-      }))
+      }));
     }
-  }
+  };
 
-  // Add a new Title and Detail field
   const addTitleAndDetail = () => {
     if (newTitle.trim() !== "" && newDetail.trim() !== "") {
       setFormData((prev) => ({
         ...prev,
-        about: [
-          ...(prev.about || []),
-          { title: newTitle.trim(), details: newDetail.trim() },
-        ],
-      }))
-      setNewTitle("")
-      setNewDetail("")
+        about: [...(prev.about || []), { title: newTitle.trim(), details: newDetail.trim() }],
+      }));
+      setNewTitle("");
+      setNewDetail("");
     }
-  }
+  };
 
   const removeTitleAndDetail = (index: number) => {
     setFormData((prev) => ({
       ...prev,
-      titlesAndDetails: prev.about?.filter((_, i) => i !== index),
-    }))
-  }
+      about: prev.about?.filter((_, i) => i !== index),
+    }));
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0]
-      setSelectedFile(file)
+      const file = e.target.files[0];
+      setSelectedFile(file);
 
-      // Create preview URL
-      const previewUrl = URL.createObjectURL(file)
-      setPhotoPreview(previewUrl)
+      const previewUrl = URL.createObjectURL(file);
+      setPhotoPreview(previewUrl);
     }
-  }
+  };
 
   const triggerFileInput = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.click()
+      fileInputRef.current.click();
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+
+    if (!session?.user?.id) {
+      alert("User ID missing. Please log in.");
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
-      // Create a copy of the form data for submission
-      const updatedProfile = { ...formData }
+      let base64Photo: string | null = null;
 
-      // Handle file upload if a new photo was selected
       if (selectedFile) {
-        // In a real application, you would upload the file to your server here
-        console.log("File to upload:", selectedFile)
+        base64Photo = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error("Failed to read file"));
+          reader.readAsDataURL(selectedFile);
+        });
       }
 
-      // Dispatch an action to update the user profile
-      console.log("Submitting updated profile:", updatedProfile)
+      const payload = {
+        ...formData,
+        userId: session.user.id,
+        photo: base64Photo || formData.photo,
+      };
 
-      // Clean up object URL to prevent memory leaks
-      if (photoPreview && photoPreview !== currentUser?.photo) {
-        URL.revokeObjectURL(photoPreview)
-      }
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-      // Show success message or redirect
-    } catch (error) {
-      console.error("Error updating profile:", error)
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.message || "Failed to update profile");
+
+      alert("✅ Profile updated successfully!");
+
+      setFormData((prev) => ({
+        ...prev,
+        photo: data.photo || prev.photo,
+      }));
+    } catch (error: any) {
+      alert(`❌ Update failed: ${error.message || error}`);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
+  };
+
+  
+  function handleLocationSelect(location: string): void {
+    setFormData((prev) => ({ ...prev, place: location }));
   }
 
-  if (!currentUser) {
-    return <div>Loading user data...</div>
-  }
-
+  // if (!currentUser) {
+  //   return <div>Loading user data...</div>;
+  // }
   return (
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader>
@@ -252,21 +277,23 @@ export default function ProfileUpdateForm() {
                   value={item.title}
                   onChange={(e) =>
                     setFormData((prev) => {
-                      const updatedTitlesAndDetails = [...(prev.about || [])]
-                      updatedTitlesAndDetails[index].title = e.target.value
-                      return { ...prev, titlesAndDetails: updatedTitlesAndDetails }
+                      const updatedAbout = [...(prev.about || [])]
+                      updatedAbout[index].title = e.target.value
+                      return { ...prev, about: updatedAbout }
                     })
                   }
+                  
                   placeholder="Title"
                 />
                 <Textarea
                   value={item.details}
                   onChange={(e) =>
                     setFormData((prev) => {
-                      const updatedTitlesAndDetails = [...(prev.about || [])]
-                      updatedTitlesAndDetails[index].details = e.target.value
-                      return { ...prev, titlesAndDetails: updatedTitlesAndDetails }
+                      const updatedAbout = [...(prev.about || [])]
+                      updatedAbout[index].details = e.target.value
+                      return { ...prev, about: updatedAbout } // ✅ Correct key
                     })
+                    
                   }
                   placeholder="Details"
                 />

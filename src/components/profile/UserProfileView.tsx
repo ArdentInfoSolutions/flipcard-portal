@@ -119,10 +119,10 @@ export function UserProfileView({ user, isCurrentUser, isFollowing, onFollow }: 
       </Card>
 
       {/* Followers Dialog */}
-      <FollowersDialog isOpen={showFollowers} onClose={() => setShowFollowers(false)} userId={user.id} />
+      <FollowersDialog isOpen={showFollowers} onClose={() => setShowFollowers(false)} userId={user.userId} />
 
       {/* Following Dialog */}
-      <FollowingDialog isOpen={showFollowing} onClose={() => setShowFollowing(false)} userId={user.id} />
+      <FollowingDialog isOpen={showFollowing} onClose={() => setShowFollowing(false)} userId={user.userId} />
     </div>
   )
 }

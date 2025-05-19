@@ -56,7 +56,7 @@ export function ProfileTabs({ webItems, posts, likedItems, bookmarkedItems }: Pr
           <h3 className="text-lg font-semibold">Web Items</h3>
           <ScrollArea className="h-[400px]">
             <div className="space-y-4">
-              {webItems.map((item) => (
+              {webItems.map((item: PostItemType) => (
                 <WebItem
                   key={item.id}
                   item={item}

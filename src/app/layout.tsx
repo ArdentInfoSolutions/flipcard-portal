@@ -1,4 +1,7 @@
 
+
+
+
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "../styles/globals.css"
@@ -8,6 +11,8 @@ import NavBar from "../components/common/NavBar"
 import SessionProviderWrapper from "@/components/common/SessionProviderWrapper"
 import { ThemeProvider } from "@/components/common/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
+import AutoProfileCreator from "@/components/AutoProfileCreator"
+import { useSession } from "next-auth/react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,6 +32,7 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen`}>
         <SessionProviderWrapper>
           <ReduxProvider>
+            <AutoProfileCreator/>
             
             <div className="flex flex-col min-h-screen">
               <NavBar />

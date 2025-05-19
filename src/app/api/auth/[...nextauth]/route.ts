@@ -1,3 +1,5 @@
+
+
 import NextAuth, { type DefaultSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 
@@ -15,9 +17,11 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,  // Loaded from env
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,  // Loaded from env
-     
-    }),
-  ],
+
+}),
+
+
+],
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
