@@ -165,36 +165,107 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
         <CardTitle>Create New {showIn.charAt(0).toUpperCase() + showIn.slice(1)} Post</CardTitle>
       </CardHeader>
 
-      {showIn !== "web" && (
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="title">Title</Label>
-                <Input id="title" name="title" value={formData.title} onChange={handleChange} required />
-              </div>
-
-              <div>
-                <Label htmlFor="promo">Promotional Text</Label>
-                <Input id="promo" name="promo" value={formData.promo} onChange={handleChange} />
-              </div>
-
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={3} />
-              </div>
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-6">
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="title">Title</Label>
+              <Input id="title" name="title" value={formData.title} onChange={handleChange} required />
             </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button type="button" variant="outline" onClick={() => router.back()}>
-              Cancel
-            </Button>
-            <Button type="submit">Create Post</Button>
-          </CardFooter>
-        </form>
-      )}
 
-      {showIn === "web" && <WebsiteDetailsForm />}
+            <div>
+              <Label htmlFor="promo">Promotional Text</Label>
+              <Input id="promo" name="promo" value={formData.promo} onChange={handleChange} />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={3} />
+            </div>
+
+            {/* Optional: Add link/image upload fields depending on post type */}
+            {showIn === "images" && (
+              <div>
+                <Label>Upload Images</Label>
+                <div className="flex flex-wrap gap-4 mt-2">
+                  {filePreviewUrls.map((url, i) => (
+                    <div key={i} className="relative w-24 h-24">
+                      <Image src={url} alt="Preview" fill className="object-cover rounded-md" />
+                      <Button
+                        type="button"
+                        size="icon"
+                        className="absolute top-0 right-0"
+                        onClick={() => removeFile(i)}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <Button type="button" onClick={triggerFileInput} className="mt-2">
+                  <ImageIcon className="mr-2 h-4 w-4" />
+                  Add Images
+                </Button>
+              </div>
+            )}
+
+            {(showIn === "videos" || showIn === "web") && (
+              <div className="space-y-2">
+                <Label>Add {showIn === "videos" ? "Videos" : "Links"}</Label>
+                <div className="flex gap-2">
+                  <Input
+                    name="title"
+                    placeholder="Link title"
+                    value={newLink.title}
+                    onChange={handleLinkChange}
+                  />
+                  <Input
+                    name="url"
+                    placeholder="https://example.com"
+                    value={newLink.url}
+                    onChange={handleLinkChange}
+                  />
+                  <Button type="button" onClick={addLink}>
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {formData.links[showIn].map((link) => (
+                    <Badge key={link.id} variant="secondary" className="flex items-center space-x-1">
+                      <span>{link.title}</span>
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="p-0"
+                        onClick={() => removeLink(link.id)}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex justify-between">
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            Cancel
+          </Button>
+          <Button type="submit">Create Post</Button>
+        </CardFooter>
+      </form>
     </Card>
   )
 }

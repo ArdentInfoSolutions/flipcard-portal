@@ -1,19 +1,29 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useAppDispatch, useAppSelector } from "../../redux/hooks"
 import { fetchUserProfile } from "../../features/auth/authThunks"
-import { selectUser, selectAuthLoading, selectAuthError } from "../../features/auth/authSelectors"
+import {
+  selectUser,
+  selectAuthLoading,
+  selectAuthError,
+} from "../../features/auth/authSelectors"
 import { ProfileTabs } from "@/components/page-components/profile/ProfileTabs"
 import { FollowDialog } from "@/components/page-components/profile/FollowDialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Pencil, PlusIcon, TvIcon } from "lucide-react"
+import { Pencil, PlusIcon } from "lucide-react"
 import { PostItemFeed } from "@/components/page-components/all-feed/PostItemFeed"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import WebsiteDetailsForm from "../../components/WebsiteDetailsForm" // ✅ Import your form
 
 export default function ProfilePage() {
   const { data: session } = useSession()
@@ -23,6 +33,9 @@ export default function ProfilePage() {
   const loading = useAppSelector(selectAuthLoading)
   const error = useAppSelector(selectAuthError)
 
+  const [showWebsiteForm, setShowWebsiteForm] = useState(false)
+  const websiteFormRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     if (!session) {
       router.push("/login")
@@ -31,6 +44,11 @@ export default function ProfilePage() {
     }
   }, [session, router, dispatch, user])
 
+  useEffect(() => {
+    if (showWebsiteForm && websiteFormRef.current) {
+      websiteFormRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [showWebsiteForm])
 
   if (loading) return <div>Loading...</div>
   if (error) return <div>Error: {error}</div>
@@ -51,8 +69,8 @@ export default function ProfilePage() {
   }))
 
   const handleAction = (type: string) => {
-    router.push(`/create/${type}`);
-  };
+    router.push(`/create/${type}`)
+  }
 
   return (
     <div className="container mx-auto p-4 w-full max-w-3xl">
@@ -103,37 +121,53 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* <ProfileTabs
-        webItems={mockWebItems}
-        posts={mockPosts}
-        likedItems={[...mockWebItems.slice(0, 2), ...mockPosts.slice(0, 2)]}
-        bookmarkedItems={[...mockWebItems.slice(2, 4), ...mockPosts.slice(2, 4)]}
-      /> */}
-
       <div className="mt-4">
-      <div className="flex items-stretch justify-between gap-10">
+        <div className="flex items-stretch justify-between gap-10">
           <h2 className="text-lg font-bold py-4">My Posts</h2>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="lg"> <PlusIcon /> Create Post</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleAction('web')}>
-                {"Web Post"}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAction('images')}>
-                {"Image Post"}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAction('videos')}>
-                {"Video Post"}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+          <div className="flex gap-4">
+            {/* Toggle Website Form Button */}
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setShowWebsiteForm((prev) => !prev)}
+            >
+              <PlusIcon className="mr-2 h-4 w-4" />
+              {showWebsiteForm ? "Close Form" : "Add Website"}
+            </Button>
+
+            {/* Create Post Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="lg">
+                  <PlusIcon className="mr-2 h-4 w-4" />
+                  Create Post
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleAction("web")}>
+                  Web Post
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAction("images")}>
+                  Image Post
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAction("videos")}>
+                  Video Post
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-        <PostItemFeed />
         </div>
+
+        <PostItemFeed />
+
+        {/* Conditionally Render WebsiteDetailsForm */}
+        {showWebsiteForm && (
+          <div ref={websiteFormRef} className="mt-6">
+            <WebsiteDetailsForm />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
-

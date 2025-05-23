@@ -17,6 +17,7 @@ let mockPostItems: PostItem[] = [
     videos: [],
     showIn: "web",
     likes: 120,
+    
     isLiked: false,
     bookmarks: 30,
     isBookmarked: false,
@@ -109,7 +110,7 @@ export const likePost = async (postId: string): Promise<{ isLiked: boolean; like
     // Create a new array with the updated post
   mockPostItems = mockPostItems.map((item, index) =>
     index === postIndex
-      ? { ...item, isLiked: !item.isLiked, likes: item.isLiked ? item.likes - 1 : item.likes + 1 }
+      ? { ...item, isLiked: !item.isLiked, likes: item.isLiked ? (item.likes ?? 0) - 1 : (item.likes ?? 0) + 1 }
       : item
     );
     post = { ...mockPostItems[postIndex] };
@@ -118,7 +119,7 @@ export const likePost = async (postId: string): Promise<{ isLiked: boolean; like
     console.log("Error:", error);
   }
   console.log("response from api:", post.isLiked, post.likes); 
-  return { isLiked: post.isLiked, likes: post.likes };
+  return { isLiked: post.isLiked ?? false, likes: post.likes ?? 0 };
 }; 
 
 export const bookmarkPost = async (postId: string): Promise<{ isBookmarked: boolean; bookmarks: number }> => {
@@ -135,7 +136,7 @@ export const bookmarkPost = async (postId: string): Promise<{ isBookmarked: bool
     // Create a new array with the updated post
   mockPostItems = mockPostItems.map((item, index) =>
     index === postIndex
-      ? { ...item, isBookmarked: !item.isBookmarked, bookmarks: item.isBookmarked ? item.bookmarks - 1 : item.bookmarks + 1 }
+      ? { ...item, isBookmarked: !item.isBookmarked, bookmarks: item.isBookmarked ? (item.bookmarks ?? 0) - 1 : (item.bookmarks ?? 0) + 1 }
       : item
     );
     post = { ...mockPostItems[postIndex] };
@@ -144,7 +145,7 @@ export const bookmarkPost = async (postId: string): Promise<{ isBookmarked: bool
     console.log("Error:", error);
   }
   console.log("response from api:", post.isBookmarked, post.bookmarks); 
-  return { isBookmarked: post.isBookmarked, bookmarks: post.bookmarks };
+  return { isBookmarked: post.isBookmarked ?? false, bookmarks: post.bookmarks ?? 0 };
 }; 
 
 export const createPostItem = async (postItem: PostItem): Promise<void> => {
