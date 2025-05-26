@@ -1,35 +1,110 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks"
-import { fetchAllPostsFeed } from "../../../features/feed/feedThunks"
-import { selectPostItems, selectFeedLoading, selectFeedError } from "../../../features/feed/feedSelectors"
-import { PostItem } from "./PostItem"
-import { WebItemsSkeleton } from "../skeletons/web-items-skeleton"
-import { likePost } from "@/features/actions-like-post/likePostThunks"
-import { bookmarkPost } from "@/features/actions-bookmark-post/bookmarkPostThunks"
+import { useEffect, useState } from "react";
+import { useAppDispatch } from "../../../redux/hooks";
+import { PostItem } from "./PostItem";
+import { WebItemsSkeleton } from "../skeletons/web-items-skeleton";
+import { likePost } from "@/features/actions-like-post/likePostThunks";
+import { bookmarkPost } from "@/features/actions-bookmark-post/bookmarkPostThunks";
+
+export interface PostItemType {
+  id: string;
+  title: string;
+  url: string;
+  description: string;
+  userName: string;
+  userLogo?: string;
+  images?: { url: string; title?: string }[];
+  showIn?: "images" | "videos";
+  postType?: "web" | "images" | "videos" | "pages";
+  links_or_images?: { url: string; title?: string }[];
+  likes: number;
+  isLiked: boolean;
+  bookmarks: number;
+  isBookmarked: boolean;
+  promo?: boolean;
+  categories?: string[];
+  pages?: any[];
+  videos?: any[];
+  createdAt?: string;
+}
 
 export function PostItemFeed() {
-  const dispatch = useAppDispatch()
-  const postItems = useAppSelector(selectPostItems)
-  const loading = useAppSelector(selectFeedLoading)
-  const error = useAppSelector(selectFeedError)
+  const dispatch = useAppDispatch();
+  const [postItems, setPostItems] = useState<PostItemType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    dispatch(fetchAllPostsFeed())
-  }, [dispatch])
+    async function fetchPosts() {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/postitem");
+        if (!res.ok) throw new Error("Failed to fetch posts");
+        const data: PostItemType[] = await res.json();
 
-  if (loading) {
-    <WebItemsSkeleton />
-  }
+        const mappedData = data.map((post) => {
+          let url = "";
+          let images: { url: string; title?: string }[] = [];
+          let pages: any[] = [];
+          let videos: any[] = [];
+          let likes = 0;
+          let isLiked = false;
+          let isBookmarked = false;
+          let createdAt = "";
 
-  if (error) {
+          if (post.postType === "web") {
+            url = post.links_or_images?.[0]?.url || "";
+          } else if (post.postType === "images") {
+            images = post.links_or_images || [];
+          } else if (post.postType === "videos") {
+            videos = post.links_or_images || [];
+          } else if (post.postType === "pages") {
+            pages = post.links_or_images || [];
+          }
+
+          if ("likes" in post) likes = post.likes;
+          if ("isLiked" in post) isLiked = post.isLiked;
+          if ("isBookmarked" in post) isBookmarked = post.isBookmarked;
+          if ("createdAt" in post) createdAt = post.createdAt || "";
+
+          return {
+            ...post,
+            url,
+            images,
+            pages,
+            videos,
+            likes,
+            isLiked,
+            isBookmarked,
+            createdAt,
+            showIn:
+              post.postType === "images"
+                ? "images"
+                : post.postType === "videos"
+                  ? "videos"
+                  : undefined as "images" | "videos" | undefined,
+          };
+        });
+
+        setPostItems(mappedData);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err.message);
+        setLoading(false);
+      }
+    }
+
+    fetchPosts();
+  }, []);
+
+  if (loading) return <WebItemsSkeleton />;
+  if (error)
     return (
       <div className="w-full max-w-3xl mx-auto p-4">
         <div className="text-red-500">Error: {error}</div>
       </div>
-    )
-  }
+    );
 
   return (
     <div className="w-full max-w-3xl mx-auto divide-y">
@@ -43,6 +118,55 @@ export function PostItemFeed() {
         />
       ))}
     </div>
-  )
+  );
 }
+
+
+// "use client"
+
+// import { useEffect } from "react"
+// import { useAppDispatch, useAppSelector } from "../../../redux/hooks"
+// import { fetchAllPostsFeed } from "../../../features/feed/feedThunks"
+// import { selectPostItems, selectFeedLoading, selectFeedError } from "../../../features/feed/feedSelectors"
+// import { PostItem } from "./PostItem"
+// import { WebItemsSkeleton } from "../skeletons/web-items-skeleton"
+// import { likePost } from "@/features/actions-like-post/likePostThunks"
+// import { bookmarkPost } from "@/features/actions-bookmark-post/bookmarkPostThunks"
+
+// export function PostItemFeed() {
+//   const dispatch = useAppDispatch()
+//   const postItems = useAppSelector(selectPostItems)
+//   const loading = useAppSelector(selectFeedLoading)
+//   const error = useAppSelector(selectFeedError)
+
+//   useEffect(() => {
+//     dispatch(fetchAllPostsFeed())
+//   }, [dispatch])
+
+//   if (loading) {
+//     <WebItemsSkeleton />
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="w-full max-w-3xl mx-auto p-4">
+//         <div className="text-red-500">Error: {error}</div>
+//       </div>
+//     )
+//   }
+
+//   return (
+//     <div className="w-full max-w-3xl mx-auto divide-y">
+//       {postItems.map((item) => (
+//         <PostItem
+//           key={item.id}
+//           item={item}
+//           onLike={(id) => dispatch(likePost(id))}
+//           onBookmark={(id) => dispatch(bookmarkPost(id))}
+//           onShare={(id) => console.log("Share:", id)}
+//         />
+//       ))}
+//     </div>
+//   )
+// }
 
