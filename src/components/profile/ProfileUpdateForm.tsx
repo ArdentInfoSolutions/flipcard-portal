@@ -207,58 +207,6 @@ export default function ProfileUpdateForm() {
   };
   
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   if (!session?.user?.id) {
-  //     alert("User ID missing. Please log in.");
-  //     return;
-  //   }
-
-  //   setIsSubmitting(true);
-
-  //   try {
-  //     let base64Photo: string | null = null;
-
-  //     if (selectedFile) {
-  //       base64Photo = await new Promise<string>((resolve, reject) => {
-  //         const reader = new FileReader();
-  //         reader.onloadend = () => resolve(reader.result as string);
-  //         reader.onerror = () => reject(new Error("Failed to read file"));
-  //         reader.readAsDataURL(selectedFile);
-  //       });
-  //     }
-
-  //     const payload = {
-  //       ...formData,
-  //       userId: session.user.id,
-  //       photo: base64Photo || formData.photo,
-        
-  //     };
-
-  //     const response = await fetch("/api/profile", {
-  //       method: "PUT",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (!response.ok) throw new Error(data.message || "Failed to update profile");
-
-  //     alert("✅ Profile updated successfully!");
-
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       photo: data.photo || prev.photo,
-  //     }));
-  //   } catch (error: any) {
-  //     alert(`❌ Update failed: ${error.message || error}`);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
   
   function handleLocationSelect(location: string): void {
     setFormData((prev) => ({ ...prev, place: location }));

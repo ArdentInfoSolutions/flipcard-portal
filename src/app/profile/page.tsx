@@ -3,13 +3,6 @@
 import { useEffect, useState, useRef } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useAppDispatch, useAppSelector } from "../../redux/hooks"
-import { fetchUserProfile } from "../../features/auth/authThunks"
-import {
-  selectUser,
-  selectAuthLoading,
-  selectAuthError,
-} from "../../features/auth/authSelectors"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -26,22 +19,49 @@ import WebsiteDetailsForm from "../../components/WebsiteDetailsForm"
 export default function ProfilePage() {
   const { data: session } = useSession()
   const router = useRouter()
-  const dispatch = useAppDispatch()
 
-  const user = useAppSelector(selectUser)
-  const loading = useAppSelector(selectAuthLoading)
-  const error = useAppSelector(selectAuthError)
-
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showWebsiteForm, setShowWebsiteForm] = useState(false)
   const websiteFormRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!session) {
       router.push("/login")
-    } else if (session.user?.id && !user) {
-      dispatch(fetchUserProfile(session.user.id))
+      return
     }
-  }, [session, router, dispatch, user])
+    const userId = session.user?.id
+    console.log("Session user:", session?.user);
+    console.log("User ID:", userId);
+
+
+
+    if (!userId) {
+      setError("User ID not found in session")
+      setLoading(false)
+      return
+    }
+
+    const fetchUserData = async () => {
+      try {
+        const res = await fetch(`/api/profile?userId=${userId}`);
+        console.log("API response status:", res.status);
+
+        if (!res.ok) throw new Error("Failed to fetch profile data")
+
+        const data = await res.json()
+        console.log("User data:", data);
+        setUser(data)
+      } catch (err: any) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUserData()
+  }, [session, router])
 
   useEffect(() => {
     if (showWebsiteForm && websiteFormRef.current) {
@@ -59,14 +79,13 @@ export default function ProfilePage() {
 
   return (
     <div className="container mx-auto p-4 w-full max-w-3xl">
-      {/* User Profile Card */}
       <Card className="bg-white">
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
                 <AvatarImage src={user.photo || "/placeholder.svg"} alt={user.name} />
-                <AvatarFallback>{user.name[0]}</AvatarFallback>
+                <AvatarFallback>{user.name?.[0]}</AvatarFallback>
               </Avatar>
               <div>
                 <h2 className="text-2xl font-bold">{user.name}</h2>
@@ -81,25 +100,65 @@ export default function ProfilePage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <p>{user.bio}</p>
+            <p className="text-base">{user.bio}</p>
+
             <div className="flex flex-wrap gap-2">
-              {user.interests.map((interest, index) => (
+              {user.interests?.map((interest: string, index: number) => (
                 <span key={index} className="bg-secondary px-2 py-1 rounded-full text-sm">
                   {interest}
                 </span>
               ))}
             </div>
+
+            {user.about && (
+              <div className="bg-gray-100 p-3 rounded-md text-sm">
+                <strong>About:</strong>
+                {Array.isArray(user.about) ? (
+                    <ul className="list-disc pl-5 mt-2">
+                    {user.about.map(
+                      (
+                      item: string | Record<string, unknown>,
+                      i: number
+                      ) => (
+                      typeof item === "string" ? (
+                        <li key={i}>{item}</li>
+                      ) : (
+                        <li key={i}>
+                        <pre>{JSON.stringify(item, null, 2)}</pre>
+                        </li>
+                      )
+                      )
+                    )}
+                    </ul>
+                ) : typeof user.about === "object" && user.about !== null ? (
+                  <>
+                    <h4 className="font-semibold mt-2">{user.about.title || "No Title"}</h4>
+
+                    {typeof user.about.details === "string" ? (
+                      <p className="mt-1 whitespace-pre-wrap">{user.about.details}</p>
+                    ) : typeof user.about.details === "object" && user.about.details !== null ? (
+                      <pre className="mt-1 whitespace-pre-wrap">
+                        {JSON.stringify(user.about.details, null, 2)}
+                      </pre>
+                    ) : (
+                      <p className="mt-1 whitespace-pre-wrap">No details available</p>
+                    )}
+                  </>
+                ) : (
+                  <pre className="whitespace-pre-wrap mt-2">{String(user.about)}</pre>
+                )}
+              </div>
+            )}
+
           </div>
         </CardContent>
       </Card>
 
-      {/* My Posts Section */}
-      <div className="mt-4">
-        <div className="flex items-stretch justify-between gap-10">
+      <div className="mt-6">
+        <div className="flex items-center justify-between gap-10">
           <h2 className="text-lg font-bold py-4">My Posts</h2>
 
           <div className="flex gap-4">
-            {/* Toggle Website Form Button */}
             <Button
               variant="outline"
               size="lg"
@@ -109,7 +168,6 @@ export default function ProfilePage() {
               {showWebsiteForm ? "Close Form" : "Add Website"}
             </Button>
 
-            {/* Create Post Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="lg">
@@ -132,10 +190,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Post Feed */}
         <PostItemFeed />
 
-        {/* Conditionally Render WebsiteDetailsForm */}
         {showWebsiteForm && (
           <div ref={websiteFormRef} className="mt-6">
             <WebsiteDetailsForm />
@@ -145,6 +201,8 @@ export default function ProfilePage() {
     </div>
   )
 }
+
+  
 
 
 // "use client"
