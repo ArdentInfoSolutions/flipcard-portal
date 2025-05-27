@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import path from "path";
@@ -148,34 +149,3 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     }
 }
-
-
-// export async function PUT(req: NextRequest) {
-//     try {
-//         const body = await req.json();
-//         const { name, email, bio, photo, place, interests, about } = body;
-
-//         if (!email) {
-//             return NextResponse.json({ message: "Email is required for update" }, { status: 400 });
-//         }
-
-//         const savedPhotoPath = typeof photo === "string" ? saveBase64Image(photo, email) : null;
-//         const interestsArray = Array.isArray(interests) ? interests : [];
-//         const interestsString = `{${interestsArray.join(",")}}`; // For Postgres array format
-
-//         const updateQuery = savedPhotoPath
-//             ? `UPDATE users SET name = $1, bio = $2, photo = $3, place = $4, interests = $5, about = $6, updated_at = CURRENT_TIMESTAMP WHERE email = $7`
-//             : `UPDATE users SET name = $1, bio = $2, place = $3, interests = $4, about = $5, updated_at = CURRENT_TIMESTAMP WHERE email = $6`;
-
-//         const values = savedPhotoPath
-//             ? [name, bio, savedPhotoPath, place, interestsString, JSON.stringify(about), email]
-//             : [name, bio, place, interestsString, JSON.stringify(about), email];
-
-//         await query(updateQuery, values);
-
-//         return NextResponse.json({ message: "Profile updated successfully" });
-//     } catch (error) {
-//         console.error("PUT Error:", error);
-//         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
-//     }
-// }

@@ -30,7 +30,7 @@ export default function ViewProfilePage() {
 
   useEffect(() => {
     if (currentUser && viewedUser) {
-      setIsFollowing(currentUser.following.includes(viewedUser.id))
+      setIsFollowing(currentUser.following.includes(viewedUser?.userId || ""))
     }
   }, [currentUser, viewedUser])
 
@@ -42,10 +42,10 @@ export default function ViewProfilePage() {
     }
 
     if (isFollowing) {
-      dispatch(unfollowUser(viewedUser.id))
+      dispatch(unfollowUser(viewedUser.userId))
       setIsFollowing(false)
     } else {
-      dispatch(followUser(viewedUser.id))
+      dispatch(followUser(viewedUser.userId))
       setIsFollowing(true)
     }
   }
@@ -87,7 +87,7 @@ export default function ViewProfilePage() {
     <div className="container mx-auto py-8 px-4">
       <UserProfileView
         user={viewedUser}
-        isCurrentUser={currentUser?.id === viewedUser.id}
+        isCurrentUser={currentUser?.userId === viewedUser.userId}
         isFollowing={isFollowing}
         onFollow={handleFollow}
       />
