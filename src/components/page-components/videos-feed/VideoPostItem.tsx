@@ -18,11 +18,11 @@ export function VideoPostItem({ post, onLike, onBookmark }: VideoPostItemProps) 
   const { data: session } = useSession()
   const router = useRouter()
 
-  const isLiked = useAppSelector((state) => selectIsPostLiked(state, post.id, post.isLiked));
-  const likes = useAppSelector((state) => selectPostLikes(state, post.id, post.likes));
+  const isLiked = useAppSelector((state) => selectIsPostLiked(state, post.id, post.isLiked ?? false));
+  const likes = useAppSelector((state) => selectPostLikes(state, post.id, post.likes ?? 0));
   
-  const isBookmarked = useAppSelector((state) => selectIsBookmarked(state, post.id, post.isBookmarked));
-  const bookmarks = useAppSelector((state) => selectBookmarks(state, post.id, post.bookmarks));
+  const isBookmarked = useAppSelector((state) => selectIsBookmarked(state, post.id, post.isBookmarked ?? false));
+  const bookmarks = useAppSelector((state) => selectBookmarks(state, post.id, post.bookmarks ?? 0));
   
   const handleAction = (action: () => void) => {
     if (session) {

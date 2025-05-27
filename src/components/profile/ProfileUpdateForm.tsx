@@ -65,7 +65,7 @@ export default function ProfileUpdateForm() {
             userId: session.user.id,
             name: userData.name || "",
             email: session.user.email || "",
-            photo: userData.image || "",
+            photo: userData.photo || userData.image || "",
             place: userData.place || "",
             bio: userData.bio || "",
             interests: userData.interests || [],

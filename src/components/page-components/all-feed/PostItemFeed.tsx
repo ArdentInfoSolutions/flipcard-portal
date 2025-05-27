@@ -78,6 +78,8 @@ export function PostItemFeed() {
             isLiked,
             isBookmarked,
             createdAt,
+            userLogo: post.userLogo !== undefined ? post.userLogo : "",
+            promo: !!post.promo,
             showIn:
               post.postType === "images"
                 ? "images"
@@ -111,7 +113,7 @@ export function PostItemFeed() {
       {postItems.map((item) => (
         <PostItem
           key={item.id}
-          item={item}
+          item={{ ...item, userLogo: item.userLogo ?? "" }}
           onLike={(id) => dispatch(likePost(id))}
           onBookmark={(id) => dispatch(bookmarkPost(id))}
           onShare={(id) => console.log("Share:", id)}
@@ -120,6 +122,7 @@ export function PostItemFeed() {
     </div>
   );
 }
+
 
 
 // "use client"
