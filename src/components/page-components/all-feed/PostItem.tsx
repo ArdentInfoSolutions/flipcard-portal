@@ -1,3 +1,6 @@
+
+
+
 import Image from "next/image"
 import { Bookmark, Heart, Share } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -31,6 +34,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
   const likes = useAppSelector((state) =>
     selectPostLikes(state, item.id, item.likes ?? 0)
   )
+  const showImagePreview = item.showIn === "images" || item.showIn === "videos";
 
   const isBookmarked = useAppSelector((state) =>
     selectIsBookmarked(state, item.id, item.isBookmarked ?? false)
@@ -50,6 +54,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
   const handleProfileClick = () => {
     router.push(`/profile/${item.id}`)
   }
+  console.log(item);
 
   const handleLike = () => onLike?.(item.id)
   const handleBookmark = () => onBookmark?.(item.id)
@@ -64,7 +69,24 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
 
   if (!item) return null
 
+
+  // return (
+  //   <div className="w-32 h-32 shrink-0 ml-auto rounded-md overflow-hidden shadow-md">
+  //     <Image
+  //       src={item.images && item.images.length > 0 && item.images[0].url ? item.images[0].url : "/placeholder.svg"}
+  //       alt={item.images && item.images.length > 0 ? (item.images[0].title || "Preview") : "Placeholder"}
+  //       width={128}
+  //       height={128}
+  //       className="object-cover"
+  //       placeholder="blur"
+  //       blurDataURL="/placeholder.svg"
+  //     />
+  //   </div>
+  // )
+  
+
   return (
+    
     <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
       <div className="p-4">
         {/* Profile */}
@@ -81,7 +103,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
             unoptimized={false} // Use optimization for internal or whitelisted images
           />
           <span className="font-medium text-sm">
-            {item.userName || "Unknown"}
+            {item.userName}
           </span>
         </div>
 
@@ -113,21 +135,47 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
             )}
           </div>
 
-          {/* Right Side Image */}
-          {item.images?.length > 0 && (
-            <div className="w-32 h-32 shrink-0 ml-auto rounded-md overflow-hidden shadow-md">
+          {(() => {
+            const imageUrl =
+              item?.images?.[0]?.url ||
+              item?.links_or_images?.[0] ||
+              null;
+
+            if (!imageUrl) return null;
+
+            return (
               <Image
-                src={item.images[0].url || "/placeholder.svg"}
-                alt={item.images[0].title || "Preview"}
+                src={imageUrl}
+                alt="Preview"
                 width={128}
                 height={128}
                 className="object-cover"
-                unoptimized={false} // optimize if domain is allowed, else true
-                placeholder="blur"
-                blurDataURL="/placeholder.svg" // small blurred placeholder while loading
+                unoptimized={true}
               />
-            </div>
-          )}
+            );
+          })()}
+
+          
+          {/* <Image
+            src={
+              item.images && item.images.length > 0 && item.images[0].url
+                ? item.images[0].url
+                : item.links_or_images && item.links_or_images.length > 0
+                ? item.links_or_images[0]
+                : ""
+            }
+            alt="Preview"
+            width={128}
+            height={128}
+            className="object-cover"
+            unoptimized={true}
+          /> */}
+
+
+
+
+          
+
         </div>
 
         {/* Actions */}
@@ -162,10 +210,13 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
             <Share className="h-4 w-4 text-gray-400" />
             Share
           </Button>
+          
         </div>
       </div>
     </div>
   )
+
+  
 }
 
 
@@ -238,7 +289,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
 //             </Avatar> */}
 //             <Image
 //               src={item.userLogo || "/placeholder.svg"}
-//               alt={item.userName}
+//               alt={item.userName || "User"}
 //               width={32}
 //               height={32}
 //               className="rounded-full mr-2"

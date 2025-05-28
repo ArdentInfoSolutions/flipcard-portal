@@ -245,7 +245,7 @@ export function PostCarousel({ post, onLike, onBookmark }: PostItemProps) {
       <div className="p-4 flex items-center">
         <Image
           src={post.userLogo || "/placeholder-user.png"}
-          alt={post.userName}
+          alt={post.userName || "User"}
           width={40}
           height={40}
           className="rounded-full mr-2"
@@ -264,7 +264,7 @@ export function PostCarousel({ post, onLike, onBookmark }: PostItemProps) {
       >
         {/* Progress Indicators (Inside Image Container) */}
         <div className="absolute top-2 left-0 w-full flex px-4 space-x-1 z-20">
-          {post.images.map((_, index) => (
+          {post.images?.map((_, index) => (
             <div key={index} className="flex-1 h-1 bg-gray-500/40 rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all duration-[3000ms] ${activeIndex === index ? "bg-white w-full" : "bg-transparent w-0"}`}
@@ -281,7 +281,7 @@ export function PostCarousel({ post, onLike, onBookmark }: PostItemProps) {
           onSwiper={(swiper) => (swiperRef.current = swiper)} // Store swiper instance
           className="w-full h-full"
         >
-          {post.images.map((image, index) => (
+          {post.images?.map((image, index) => (
             <SwiperSlide key={index} className="flex justify-center">
               <Image
                 src={image.url}

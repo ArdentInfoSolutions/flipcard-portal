@@ -1,8 +1,12 @@
+
+
+
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../../redux/hooks";
-import { PostItem } from "./PostItem";
+import {PostItem} from "./PostItem";
 import { WebItemsSkeleton } from "../skeletons/web-items-skeleton";
 import { likePost } from "@/features/actions-like-post/likePostThunks";
 import { bookmarkPost } from "@/features/actions-bookmark-post/bookmarkPostThunks";
@@ -13,7 +17,7 @@ export interface PostItemType {
   url: string;
   description: string;
   userName: string;
-  userLogo?: string;
+  userLogo: string; // ✅ Now always a string
   images?: { url: string; title?: string }[];
   showIn?: "images" | "videos";
   postType?: "web" | "images" | "videos" | "pages";
@@ -43,7 +47,7 @@ export function PostItemFeed() {
         if (!res.ok) throw new Error("Failed to fetch posts");
         const data: PostItemType[] = await res.json();
 
-        const mappedData = data.map((post) => {
+        const mappedData: PostItemType[] = data.map((post) => {
           let url = "";
           let images: { url: string; title?: string }[] = [];
           let pages: any[] = [];
@@ -78,14 +82,14 @@ export function PostItemFeed() {
             isLiked,
             isBookmarked,
             createdAt,
-            userLogo: post.userLogo !== undefined ? post.userLogo : "",
+            userLogo: post.userLogo ?? "", // ✅ Always provide string fallback
             promo: !!post.promo,
             showIn:
               post.postType === "images"
                 ? "images"
                 : post.postType === "videos"
                   ? "videos"
-                  : undefined as "images" | "videos" | undefined,
+                  : undefined,
           };
         });
 
@@ -113,15 +117,38 @@ export function PostItemFeed() {
       {postItems.map((item) => (
         <PostItem
           key={item.id}
-          item={{ ...item, userLogo: item.userLogo ?? "" }}
-          onLike={(id) => dispatch(likePost(id))}
-          onBookmark={(id) => dispatch(bookmarkPost(id))}
-          onShare={(id) => console.log("Share:", id)}
+          item={{
+            ...item,
+            userLogo: item.userLogo ?? "/placeholder.svg", // ✅ fallback for TS type safety
+            images: item.images
+              ? item.images.map((img, idx) => ({
+                  id: idx,
+                  url: img.url,
+                  title: img.title !== undefined && img.title !== null ? img.title : null,
+                }))
+              : undefined,
+            showIn:
+              item.showIn === "images"
+                ? "images"
+                : item.showIn === "videos"
+                ? "videos"
+                : "web", // Always provide a valid value
+            createdAt: item.createdAt ?? "", // Ensure createdAt is always a string
+            promo: typeof item.promo === "boolean" ? String(item.promo) : item.promo, // Convert boolean to string if needed
+            links_or_images: item.links_or_images
+              ? item.links_or_images.map((l) => typeof l === "string" ? l : l.url)
+              : undefined, // Ensure links_or_images is string[]
+          }}
+          onLike={() => dispatch(likePost(item.id))}
+          onBookmark={() => dispatch(bookmarkPost(item.id))}
+          onShare={() => console.log("Share:", item.id)}
         />
       ))}
     </div>
   );
+    
 }
+
 
 
 

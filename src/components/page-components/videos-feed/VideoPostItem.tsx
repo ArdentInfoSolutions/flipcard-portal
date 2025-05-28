@@ -59,7 +59,7 @@ export function VideoPostItem({ post, onLike, onBookmark }: VideoPostItemProps) 
         <div className="flex items-center mb-2">
           <Image
             src={post.userLogo || "/placeholder.svg"}
-            alt={post.userName}
+            alt={post.userName || "User"}
             width={40}
             height={40}
             className="rounded-full mr-2"
