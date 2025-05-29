@@ -33,8 +33,7 @@ export default function ProfilePage() {
       return
     }
     const userId = session.user?.id
-    console.log("Session user:", session?.user);
-    console.log("User ID:", userId);
+    
 
 
 
@@ -52,7 +51,7 @@ export default function ProfilePage() {
         if (!res.ok) throw new Error("Failed to fetch profile data")
 
         const data = await res.json()
-        console.log("User data:", data);
+
         setUser(data)
       } catch (err: any) {
         setError(err.message)

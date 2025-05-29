@@ -35,12 +35,12 @@ function saveBase64Image(photo: string, email: string): string | null {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        console.log("📥 Received POST data:", body);
+        console.log("📥 Received POST data:");
 
         const { name, email, photo, userId } = body;
 
         if (!name || !email || !userId) {
-            console.error("❗Missing required fields:", { name, email, userId });
+            console.error("❗Missing required fields:");
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
             [userId, name, email, savedPhoto]
         );
 
-        console.log("✅ Profile created:", result);
+        console.log("✅ Profile created:");
         return NextResponse.json({ message: "Profile created", userId: result[0].userId }, { status: 201 });
 
     } catch (err: any) {

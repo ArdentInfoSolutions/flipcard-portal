@@ -72,7 +72,7 @@ export function ProfileTabs({ webItems, posts, likedItems, bookmarkedItems }: Pr
               {posts.map((post) => (
                 <PostItem
                   key={post.id}
-                  post={post}
+                  item={post}
                   onLike={(id) => console.log("Like:", id)}
                   onBookmark={(id) => console.log("Bookmark:", id)}
                 />
