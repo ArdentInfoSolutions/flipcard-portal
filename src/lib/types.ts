@@ -6,23 +6,27 @@ export interface LinkItem {
 
 export interface PostItem {
   id: string;
-  userLogo: string
-  userName: string
-  title: string
-  promo: string
-  description: string
-  url: string
-  categories: string[]
-  images: LinkItem[]
-  pages: LinkItem[]
-  videos: LinkItem[]
-  showIn: "web" | "images" | "videos"
-  likes: number|null
-  isLiked: boolean|null
-  bookmarks: number|null
-  isBookmarked: boolean|null
-  createdAt: string
+  userLogo?: string;
+  userName?: string;
+  title: string;
+  promo?: string;
+  description?: string;
+  url: string;
+  categories?: string[];
+  images?: LinkItem[];
+  postType?: "web" | "images" | "videos" | "pages";
+  links_or_images?: string[];
+  pages?: LinkItem[];
+  videos?: LinkItem[];
+  showIn?: "web" | "images" | "videos";
+  likes?: number | null;
+  isLiked?: boolean | null;
+  bookmarks?: number | null;
+  isBookmarked?: boolean | null;
+  createdAt: string;
+  type?: 'image' | 'video' | 'web' | 'text';
 }
+
 
 export interface UserProfile {
   userId: string

@@ -13,7 +13,7 @@ export interface PostItemType {
   url: string;
   description: string;
   userName: string;
-  userLogo?: string;
+  userLogo: string;
   images?: { url: string; title?: string }[];
   showIn?: "images" | "videos";
   postType?: "web" | "images" | "videos" | "pages";
@@ -43,33 +43,30 @@ export function PostItemFeed() {
         if (!res.ok) throw new Error("Failed to fetch posts");
         const data: PostItemType[] = await res.json();
 
-        const mappedData = data.map((post) => {
+        const mappedData: PostItemType[] = data.map((post) => {
+          const postType = post.postType; // ✅ use camelCase property as defined in PostItemType
           let url = "";
           let images: { url: string; title?: string }[] = [];
           let pages: any[] = [];
           let videos: any[] = [];
-          let likes = 0;
-          let isLiked = false;
-          let isBookmarked = false;
-          let createdAt = "";
+          let likes = post.likes ?? 0;
+          let isLiked = post.isLiked ?? false;
+          let isBookmarked = post.isBookmarked ?? false;
+          let createdAt = post.createdAt ?? "";
 
-          if (post.postType === "web") {
+          if (postType === "web") {
             url = post.links_or_images?.[0]?.url || "";
-          } else if (post.postType === "images") {
+          } else if (postType === "images") {
             images = post.links_or_images || [];
-          } else if (post.postType === "videos") {
+          } else if (postType === "videos") {
             videos = post.links_or_images || [];
-          } else if (post.postType === "pages") {
+          } else if (postType === "pages") {
             pages = post.links_or_images || [];
           }
 
-          if ("likes" in post) likes = post.likes;
-          if ("isLiked" in post) isLiked = post.isLiked;
-          if ("isBookmarked" in post) isBookmarked = post.isBookmarked;
-          if ("createdAt" in post) createdAt = post.createdAt || "";
-
           return {
             ...post,
+            postType, // ✅ ensure this exists
             url,
             images,
             pages,
@@ -78,12 +75,14 @@ export function PostItemFeed() {
             isLiked,
             isBookmarked,
             createdAt,
+            userLogo: post.userLogo ?? "",
+            promo: !!post.promo,
             showIn:
-              post.postType === "images"
+              postType === "images"
                 ? "images"
-                : post.postType === "videos"
+                : postType === "videos"
                   ? "videos"
-                  : undefined as "images" | "videos" | undefined,
+                  : undefined,
           };
         });
 
@@ -111,10 +110,40 @@ export function PostItemFeed() {
       {postItems.map((item) => (
         <PostItem
           key={item.id}
-          item={item}
-          onLike={(id) => dispatch(likePost(id))}
-          onBookmark={(id) => dispatch(bookmarkPost(id))}
-          onShare={(id) => console.log("Share:", id)}
+          item={{
+            ...item,
+            postType: item.postType ?? "web", // ✅ fix: ensure postType is passed
+            userLogo: item.userLogo ?? "/placeholder.svg",
+            images: item.images
+              ? item.images.map((img, idx) => ({
+                id: idx,
+                url: img.url,
+                title:
+                  img.title !== undefined && img.title !== null
+                    ? img.title
+                    : null,
+              }))
+              : undefined,
+            showIn:
+              item.showIn === "images"
+                ? "images"
+                : item.showIn === "videos"
+                  ? "videos"
+                  : "web",
+            createdAt: item.createdAt ?? "",
+            promo:
+              typeof item.promo === "boolean"
+                ? String(item.promo)
+                : item.promo,
+            links_or_images: item.links_or_images
+              ? item.links_or_images.map((l) =>
+                typeof l === "string" ? l : l.url
+              )
+              : undefined,
+          }}
+          onLike={() => dispatch(likePost(item.id))}
+          onBookmark={() => dispatch(bookmarkPost(item.id))}
+          onShare={() => console.log("Share:", item.id)}
         />
       ))}
     </div>

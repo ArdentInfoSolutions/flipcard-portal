@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Pencil, PlusIcon } from "lucide-react"
-import { PostItemFeed } from "@/components/page-components/all-feed/PostItemFeed"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import WebsiteDetailsForm from "../../components/WebsiteDetailsForm"
+import { PostItemFeed } from "@/components/page-components/all-feed/PostItemFeed"
 
 export default function ProfilePage() {
   const { data: session } = useSession()
@@ -32,8 +33,7 @@ export default function ProfilePage() {
       return
     }
     const userId = session.user?.id
-    console.log("Session user:", session?.user);
-    console.log("User ID:", userId);
+    
 
 
 
@@ -51,7 +51,7 @@ export default function ProfilePage() {
         if (!res.ok) throw new Error("Failed to fetch profile data")
 
         const data = await res.json()
-        console.log("User data:", data);
+
         setUser(data)
       } catch (err: any) {
         setError(err.message)
@@ -190,7 +190,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <PostItemFeed />
+    
+          <PostItemFeed/>
 
         {showWebsiteForm && (
           <div ref={websiteFormRef} className="mt-6">

@@ -13,18 +13,13 @@ export default function AutoProfileCreator() {
 
             const { email, name, image, id } = session.user;
 
-            console.log("🔍 AutoProfileCreator: Session Data:", {
-                email,
-                name,
-                image,
-                id,
-            });
+           
 
             try {
                 // Check if user already exists
                 const checkRes = await fetch(`/api/check-user?userId=${encodeURIComponent(id || "")}`);
                 const checkData = await checkRes.json();
-                console.log("📡 Check user response:", checkData);
+                
 
                 if (!checkData.exists) {
                     const profileData = {
@@ -34,7 +29,7 @@ export default function AutoProfileCreator() {
                         userId: id || "",
                     };
 
-                    console.log("📤 Sending profile creation request with data:", profileData);
+              
 
                     const createRes = await fetch("/api/profile", {
                         method: "POST",
@@ -43,7 +38,7 @@ export default function AutoProfileCreator() {
                     });
 
                     const resJson = await createRes.json();
-                    console.log("✅ Profile creation response:", resJson);
+                
 
                     if (!createRes.ok) {
                         console.error("❌ Profile creation failed:", resJson);

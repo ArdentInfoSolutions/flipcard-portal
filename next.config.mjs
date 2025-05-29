@@ -16,7 +16,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    domains: [
+      'res.cloudinary.com',
+      'hebbkx1anhila5yf.public.blob.vercel-storage.com',
+      'i.pravatar.cc'
+    ],
   },
   experimental: {
     webpackBuildWorker: true,

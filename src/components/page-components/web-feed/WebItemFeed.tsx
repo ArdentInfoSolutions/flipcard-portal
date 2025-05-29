@@ -41,7 +41,13 @@ export function WebItemFeed() {
       {postItems.map((item) => (
         <WebItem
           key={item.id}
-          item={{ ...item, isLiked: item.isLiked ?? false, isBookmarked: item.isBookmarked ?? false }}
+          item={{ 
+            ...item, 
+            isLiked: item.isLiked ?? false, 
+            isBookmarked: item.isBookmarked ?? false, 
+            userName: item.userName ?? "",
+            description: item.description ?? ""
+          }}
           onLike={(id) => console.log("Like:", id)}
           onBookmark={(id) => console.log("Bookmark:", id)}
         />
