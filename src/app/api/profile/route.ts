@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import path from "path";
@@ -9,21 +8,10 @@ function saveBase64Image(photo: string, email: string): string | null {
     if (!photo) return null;
 
     if (photo.startsWith("data:image")) {
-        const cleanedBase64 = photo.split(",")[1];
-        if (!cleanedBase64) return null;
-
-        const buffer = Buffer.from(cleanedBase64, "base64");
-        const fileName = `${Date.now()}-${email.replace(/[^a-zA-Z0-9]/g, "")}.jpg`;
-        const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
-        const fullPath = path.join(uploadDir, fileName);
-        fs.writeFileSync(fullPath, buffer);
-
-        return `/uploads/${fileName}`;
+        // Skip file writing in serverless environment like Vercel
+        console.log("⚠️ Skipping image saving on serverless environment for base64 image");
+        // You can later implement external image upload here (e.g. Cloudinary)
+        return null;
     } else if (photo.startsWith("http")) {
         // It's a URL, return as-is
         return photo;
@@ -48,9 +36,8 @@ export async function POST(req: NextRequest) {
         const existingUser = await query("SELECT userid FROM users WHERE email = $1", [email]);
 
         if (existingUser.length > 0) {
-            // User exists, do nothing and return success
             console.log(`User with email ${email} already exists. Skipping insert.`);
-            return NextResponse.json({ message: "User already exists, no action taken.",userId: existingUser[0] }, { status: 200 });
+            return NextResponse.json({ message: "User already exists, no action taken.", userId: existingUser[0] }, { status: 200 });
         }
 
         // Save the base64 image or keep URL
@@ -63,13 +50,14 @@ export async function POST(req: NextRequest) {
         );
 
         console.log("✅ Profile created:");
-        return NextResponse.json({ message: "Profile created", userId: result[0].userId }, { status: 201 });
+        return NextResponse.json({ message: "Profile created", userId: result[0].userid }, { status: 201 });
 
     } catch (err: any) {
         console.error("❌ Server error in POST /api/profile:", err.message || err);
         return NextResponse.json({ error: "Server error", details: err.message || err }, { status: 500 });
     }
 }
+
 export async function PUT(req: NextRequest) {
     try {
         const body = await req.json();
@@ -79,14 +67,14 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ message: "User ID is required for update" }, { status: 400 });
         }
 
-        // Adjust this if your userId column name is 'userid' or 'id'
+        // Adjust if your userId column name is 'userid' or 'id'
         const checkUser = await query("SELECT userid FROM users WHERE userid = $1", [userId]);
 
         if (checkUser.length === 0) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
-        // saveBase64Image is sync; remove await
+        // saveBase64Image is sync; no await needed
         const savedPhotoPath = typeof photo === "string" ? saveBase64Image(photo, userId.toString()) : null;
 
         const interestsArray = Array.isArray(interests) ? interests : [];
@@ -103,11 +91,12 @@ export async function PUT(req: NextRequest) {
 
         return NextResponse.json({ message: "Profile updated successfully" });
 
-    } catch (error) {
-        console.error("PUT Error:", error);
+    } catch (error: any) {
+        console.error("❌ PUT Error:", error.message || error);
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     }
 }
+
 
 
 export async function GET(req: NextRequest) {
