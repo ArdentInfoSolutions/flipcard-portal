@@ -1,3 +1,5 @@
+
+
 "use client"
 
 import type React from "react"
@@ -13,26 +15,56 @@ interface LocationSearchProps {
 
 // Mock location data for demonstration
 const MOCK_LOCATIONS = [
-  "New York, NY",
-  "Los Angeles, CA",
-  "Chicago, IL",
-  "Houston, TX",
-  "Phoenix, AZ",
-  "Philadelphia, PA",
-  "San Antonio, TX",
-  "San Diego, CA",
-  "Dallas, TX",
-  "San Francisco, CA",
-  "Austin, TX",
-  "Seattle, WA",
-  "Boston, MA",
-  "Miami, FL",
-  "Denver, CO",
-  "Las Vegas, NV",
-  "Atlanta, GA",
-  "Portland, OR",
-  "San Jose, CA",
-  "Nashville, TN",
+  "Delhi, DL",
+  "Mumbai, MH",
+  "Bangalore, KA",
+  "Chennai, TN",
+  "Kolkata, WB",
+  "Hyderabad, TG",
+  "Pune, MH",
+  "Ahmedabad, GJ",
+  "Jaipur, RJ",
+  "Lucknow, UP",
+  "Kanpur, UP",
+  "Nagpur, MH",
+  "Indore, MP",
+  "Thane, MH",
+  "Bhopal, MP",
+  "Visakhapatnam, AP",
+  "Pimpri-Chinchwad, MH",
+  "Patna, BR",
+  "Vadodara, GJ",
+  "Ghaziabad, UP",
+  "Ludhiana, PB",
+  "Agra, UP", 
+  "Nashik, MH",
+  "Faridabad, HR",
+  "Meerut, UP",
+  "Rajkot, GJ",
+  "Kalyan-Dombivli, MH",
+  "Vasai-Virar, MH",
+  "Varanasi, UP",
+  "Srinagar, JK",
+  "Aurangabad, MH",
+  "Dhanbad, JH",
+  "Amritsar, PB",
+  "Amritsar, PB",
+  "Ludhiana, PB",
+  "Jalandhar, PB",
+  "Patiala, PB",
+  "Bathinda, PB",
+  "Firozpur, PB",
+  "Pathankot, PB",
+  "Chandigarh, PB",
+  "Hoshiarpur, PB",
+  "Moga, PB",
+  "Sangrur, PB",
+  "Batala, PB",
+  "Kapurthala, PB",
+  "Phagwara, PB",
+  "Barnala, PB"
+
+
 ]
 
 export function LocationSearch({ initialValue, onSelect }: LocationSearchProps) {

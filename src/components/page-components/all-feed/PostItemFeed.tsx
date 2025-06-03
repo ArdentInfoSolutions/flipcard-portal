@@ -42,9 +42,10 @@ export function PostItemFeed() {
         const res = await fetch("/api/postitem");
         if (!res.ok) throw new Error("Failed to fetch posts");
         const data: PostItemType[] = await res.json();
+        console.log("Fetched posts:", data);
 
-        const mappedData: PostItemType[] = data.map((post) => {
-          const postType = post.postType; // ✅ use camelCase property as defined in PostItemType
+        const mappedData: PostItemType[] = data.map((post: any) => {
+          const postType = post.post_type || "web";
           let url = "";
           let images: { url: string; title?: string }[] = [];
           let pages: any[] = [];
