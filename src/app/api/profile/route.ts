@@ -1,19 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
-import path from "path";
-import fs from "fs";
+import cloudinary from "@/lib/cloudinary";
 
-// Helper function to save base64 image
-function saveBase64Image(photo: string, email: string): string | null {
+// Async helper to upload base64 image to Cloudinary
+async function saveBase64Image(photo: string, userId: string): Promise<string | null> {
     if (!photo) return null;
 
     if (photo.startsWith("data:image")) {
-        // Skip file writing in serverless environment like Vercel
-        console.log("⚠️ Skipping image saving on serverless environment for base64 image");
-        // You can later implement external image upload here (e.g. Cloudinary)
-        return null;
+        try {
+            const uploadResponse = await cloudinary.uploader.upload(photo, {
+                folder: "user_profiles",
+                public_id: `profile-${userId}`,
+                overwrite: true,
+            });
+            return uploadResponse.secure_url;
+        } catch (error) {
+            console.error("Cloudinary upload error:", error);
+            return null;
+        }
     } else if (photo.startsWith("http")) {
-        // It's a URL, return as-is
+        // If photo is already a URL, just return it
         return photo;
     } else {
         return null;
@@ -23,25 +29,22 @@ function saveBase64Image(photo: string, email: string): string | null {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        console.log("📥 Received POST data:");
+        console.log("📥 Received POST data:", body);
 
         const { name, email, photo, userId } = body;
 
         if (!name || !email || !userId) {
-            console.error("❗Missing required fields:");
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
         // Check if user already exists by email
         const existingUser = await query("SELECT userid FROM users WHERE email = $1", [email]);
-
         if (existingUser.length > 0) {
-            console.log(`User with email ${email} already exists. Skipping insert.`);
-            return NextResponse.json({ message: "User already exists, no action taken.", userId: existingUser[0] }, { status: 200 });
+            return NextResponse.json({ message: "User already exists, no action taken.", userId: existingUser[0].userid }, { status: 200 });
         }
 
-        // Save the base64 image or keep URL
-        const savedPhoto = saveBase64Image(photo, email);
+        // Upload photo to Cloudinary and get URL
+        const savedPhoto = await saveBase64Image(photo, userId.toString());
 
         // Insert new user profile
         const result = await query(
@@ -49,7 +52,6 @@ export async function POST(req: NextRequest) {
             [userId, name, email, savedPhoto]
         );
 
-        console.log("✅ Profile created:");
         return NextResponse.json({ message: "Profile created", userId: result[0].userid }, { status: 201 });
 
     } catch (err: any) {
@@ -67,18 +69,18 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ message: "User ID is required for update" }, { status: 400 });
         }
 
-        // Adjust if your userId column name is 'userid' or 'id'
+        // Check if user exists
         const checkUser = await query("SELECT userid FROM users WHERE userid = $1", [userId]);
-
         if (checkUser.length === 0) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
-        // saveBase64Image is sync; no await needed
-        const savedPhotoPath = typeof photo === "string" ? saveBase64Image(photo, userId.toString()) : null;
+        // Upload photo to Cloudinary if new photo string is provided
+        const savedPhotoPath = (typeof photo === "string" && photo) ? await saveBase64Image(photo, userId.toString()) : null;
 
         const interestsArray = Array.isArray(interests) ? interests : [];
 
+        // Update query depending on if photo was uploaded or not
         const updateQuery = savedPhotoPath
             ? `UPDATE users SET name = $1, bio = $2, photo = $3, place = $4, interests = $5, about = $6, updated_at = CURRENT_TIMESTAMP WHERE userid = $7`
             : `UPDATE users SET name = $1, bio = $2, place = $3, interests = $4, about = $5, updated_at = CURRENT_TIMESTAMP WHERE userid = $6`;

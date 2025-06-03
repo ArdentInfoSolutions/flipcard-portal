@@ -19,7 +19,8 @@ const nextConfig = {
     domains: [
       'res.cloudinary.com',
       'hebbkx1anhila5yf.public.blob.vercel-storage.com',
-      'i.pravatar.cc'
+      'i.pravatar.cc',
+      'lh3.googleusercontent.com'
     ],
   },
   experimental: {

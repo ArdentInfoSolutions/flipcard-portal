@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
 import WebsiteDetailsForm from "../../components/WebsiteDetailsForm"
 import { PostItemFeed } from "@/components/page-components/all-feed/PostItemFeed"
 
@@ -32,11 +33,8 @@ export default function ProfilePage() {
       router.push("/login")
       return
     }
+
     const userId = session.user?.id
-    
-
-
-
     if (!userId) {
       setError("User ID not found in session")
       setLoading(false)
@@ -45,13 +43,10 @@ export default function ProfilePage() {
 
     const fetchUserData = async () => {
       try {
-        const res = await fetch(`/api/profile?userId=${userId}`);
-        console.log("API response status:", res.status);
-
+        const res = await fetch(`/api/profile?userId=${userId}`)
         if (!res.ok) throw new Error("Failed to fetch profile data")
 
         const data = await res.json()
-
         setUser(data)
       } catch (err: any) {
         setError(err.message)
@@ -76,6 +71,11 @@ export default function ProfilePage() {
   if (loading) return <div>Loading...</div>
   if (error) return <div>Error: {error}</div>
   if (!user) return null
+  console.log("ABOUT DATA:", user.about);
+  console.log("User photo:", user.photo);
+  console.log("Session user image:", session?.user?.image);
+
+
 
   return (
     <div className="container mx-auto p-4 w-full max-w-3xl">
@@ -84,9 +84,18 @@ export default function ProfilePage() {
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={user.photo || "/placeholder.svg"} alt={user.name} />
+                <img
+                  src={user.photo || session?.user?.image || "/placeholder.svg"}
+                  alt={user.name}
+                  className="h-20 w-20 rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder.svg"
+                  }}
+                />
                 <AvatarFallback>{user.name?.[0]}</AvatarFallback>
               </Avatar>
+
+
               <div>
                 <h2 className="text-2xl font-bold">{user.name}</h2>
                 <p className="text-muted-foreground">{user.email}</p>
@@ -98,57 +107,36 @@ export default function ProfilePage() {
             </Button>
           </div>
         </CardHeader>
+
         <CardContent>
           <div className="space-y-4">
-            <p className="text-base">{user.bio}</p>
+            {user.bio && <p className="text-base">{user.bio}</p>}
 
-            <div className="flex flex-wrap gap-2">
-              {user.interests?.map((interest: string, index: number) => (
-                <span key={index} className="bg-secondary px-2 py-1 rounded-full text-sm">
-                  {interest}
-                </span>
-              ))}
-            </div>
-
-            {user.about && (
-              <div className="bg-gray-100 p-3 rounded-md text-sm">
-                <strong>About:</strong>
-                {Array.isArray(user.about) ? (
-                    <ul className="list-disc pl-5 mt-2">
-                    {user.about.map(
-                      (
-                      item: string | Record<string, unknown>,
-                      i: number
-                      ) => (
-                      typeof item === "string" ? (
-                        <li key={i}>{item}</li>
-                      ) : (
-                        <li key={i}>
-                        <pre>{JSON.stringify(item, null, 2)}</pre>
-                        </li>
-                      )
-                      )
-                    )}
-                    </ul>
-                ) : typeof user.about === "object" && user.about !== null ? (
-                  <>
-                    <h4 className="font-semibold mt-2">{user.about.title || "No Title"}</h4>
-
-                    {typeof user.about.details === "string" ? (
-                      <p className="mt-1 whitespace-pre-wrap">{user.about.details}</p>
-                    ) : typeof user.about.details === "object" && user.about.details !== null ? (
-                      <pre className="mt-1 whitespace-pre-wrap">
-                        {JSON.stringify(user.about.details, null, 2)}
-                      </pre>
-                    ) : (
-                      <p className="mt-1 whitespace-pre-wrap">No details available</p>
-                    )}
-                  </>
-                ) : (
-                  <pre className="whitespace-pre-wrap mt-2">{String(user.about)}</pre>
-                )}
+            {user.interests?.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {user.interests.map((interest: string, index: number) => (
+                  <span key={index} className="bg-secondary px-2 py-1 rounded-full text-sm">
+                    {interest}
+                  </span>
+                ))}
               </div>
             )}
+
+{user.about && Array.isArray(user.about) && (
+  <div className="bg-white shadow-md rounded-lg p-6 mt-6 border border-gray-200">
+    
+    {user.about.map((item: any, i: number) => (
+      <div key={i} className="mb-4">
+        {item.title && (
+          <h4 className="text-lg font-semibold text-indigo-700">{item.title}</h4>
+        )}
+        {item.details && (
+          <p className="text-gray-700 whitespace-pre-wrap">{item.details}</p>
+        )}
+      </div>
+    ))}
+  </div>
+)}
 
           </div>
         </CardContent>
@@ -190,8 +178,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-    
-          <PostItemFeed/>
+        <PostItemFeed />
 
         {showWebsiteForm && (
           <div ref={websiteFormRef} className="mt-6">
@@ -202,8 +189,6 @@ export default function ProfilePage() {
     </div>
   )
 }
-
-  
 
 
 // "use client"
