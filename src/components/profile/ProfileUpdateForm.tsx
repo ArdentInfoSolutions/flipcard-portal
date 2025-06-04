@@ -18,6 +18,7 @@ import type { UserProfile } from "@/lib/types";
 import { LocationSearch } from "@/components/profile/LocationSearch";
 
 
+
 export default function ProfileUpdateForm() {
   const router = useRouter();
   const { data: session, status } = useSession();
