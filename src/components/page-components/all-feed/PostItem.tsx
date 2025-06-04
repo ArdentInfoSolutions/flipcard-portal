@@ -148,21 +148,26 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
             </a>
           )}
         </div>
+       
 
-        {!isWebPost && (item.images?.[0]?.url || item.links_or_images?.[0]) && (
-          <div className="w-32 h-32 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
-            <Image
-              src={
-                item.images?.[0]?.url || item.links_or_images?.[0] || "/placeholder.svg"
-              }
-              alt={item.title || "Post Image"}
-              width={128}
-              height={128}
-              className="w-full h-full object-cover"
-              unoptimized
-            />
-          </div>
-        )}
+
+       
+        {(item.postType === "images" || item.postType === "videos") &&
+          (item.images?.[0]?.url || item.links_or_images?.[0]) && (
+            <div className="w-32 h-32 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+              <Image
+                src={
+                  item.images?.[0]?.url || item.links_or_images?.[0] || "/placeholder.svg"
+                }
+                alt={item.title || "Post Image"}
+                width={128}
+                height={128}
+                className="w-full h-full object-cover"
+                unoptimized
+              />
+            </div>
+          )}
+
       </div>
 
       {/* Actions */}
