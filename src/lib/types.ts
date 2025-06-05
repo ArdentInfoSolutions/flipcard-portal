@@ -35,6 +35,8 @@ export interface UserProfile {
   bio: string
   photo: string
   place: string
+  latitude: number
+  longitude: number
   interests: string[]
   followers: string[]
   following: string[]
