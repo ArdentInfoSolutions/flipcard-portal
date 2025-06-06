@@ -105,7 +105,12 @@ export default function ProfilePage() {
               <div>
                 <h2 className="text-2xl font-bold">{user.name}</h2>
                 <p className="text-muted-foreground">{user.email}</p>
-                <p className="text-muted-foreground">{user.place} Latitide:{user.latitude.toFixed(6)}, Longitude:{user.longitude.toFixed(6)}</p>
+                <p className="text-muted-foreground">
+                  {user.place && user.latitude != null && user.longitude != null
+                    ? `${user.place} — Latitude: ${user.latitude.toFixed(6)}, Longitude: ${user.longitude.toFixed(6)}`
+                    : "Location not provided"}
+                </p>
+
                 {/* { user.latitude && user.longitude && (
                   <p className="text-muted-foreground">
                     latitude: {user.latitude.toFixed(6)}, longitude: {user.longitude.toFixed(6)}
