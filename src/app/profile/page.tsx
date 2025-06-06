@@ -29,12 +29,15 @@ export default function ProfilePage() {
   const websiteFormRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    console.log("Session data:", session)
+    setLoading(true)
     if (!session) {
       router.push("/login")
       return
     }
 
     const userId = session.user?.id
+    console.log("User ID from session:", userId)
     if (!userId) {
       setError("User ID not found in session")
       setLoading(false)
@@ -43,6 +46,7 @@ export default function ProfilePage() {
 
     const fetchUserData = async () => {
       try {
+        console.log("Fetching profile data for userId:", userId)
         const res = await fetch(`/api/profile?userId=${userId}`)
         if (!res.ok) throw new Error("Failed to fetch profile data")
 
@@ -71,7 +75,9 @@ export default function ProfilePage() {
   if (loading) return <div>Loading...</div>
   if (error) return <div>Error: {error}</div>
   if (!user) return null
-  console.log("ABOUT DATA:", user.about);
+  console.log("ABOUT DATA:", user);
+  console.log("User latitude:", user.latitude)
+  console.log("User longitude:", user.longitude)
   console.log("User photo:", user.photo);
   console.log("Session user image:", session?.user?.image);
 
@@ -99,7 +105,12 @@ export default function ProfilePage() {
               <div>
                 <h2 className="text-2xl font-bold">{user.name}</h2>
                 <p className="text-muted-foreground">{user.email}</p>
-                <p className="text-muted-foreground">{user.place}</p>
+                <p className="text-muted-foreground">{user.place} Latitide:{user.latitude.toFixed(6)}, Longitude:{user.longitude.toFixed(6)}</p>
+                {/* { user.latitude && user.longitude && (
+                  <p className="text-muted-foreground">
+                    latitude: {user.latitude.toFixed(6)}, longitude: {user.longitude.toFixed(6)}
+                  </p>    
+                )} */}
               </div>
             </div>
             <Button variant="outline" size="icon" onClick={() => router.push("/profile/edit")}>

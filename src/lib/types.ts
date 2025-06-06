@@ -23,8 +23,10 @@ export interface PostItem {
   isLiked?: boolean | null;
   bookmarks?: number | null;
   isBookmarked?: boolean | null;
+  photo?: string;
   createdAt: string;
   type?: 'image' | 'video' | 'web' | 'text';
+  
 }
 
 

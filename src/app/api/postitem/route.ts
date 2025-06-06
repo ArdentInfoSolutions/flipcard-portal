@@ -62,7 +62,20 @@ export async function POST(req: NextRequest) {
             webLinks,
             videoLinks,
             images,
+            userId,
         } = body;
+
+        if (!userId) {
+            return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+        }
+
+        // 1. Fetch user profile photo from database (pseudo-code)
+        const userProfile = await query(
+            "SELECT photo FROM user_profile WHERE user_id = $1",
+            [userId]
+        );
+
+        const profilePhoto = userProfile?.[0]?.photo || null;
 
         let content: any = null;
 

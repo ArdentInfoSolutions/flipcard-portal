@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: "Missing userId" }, { status: 400 });
         }
 
-        const result = await query("SELECT userid, name, email, bio, photo, place, interests, about FROM users WHERE userid = $1", [userId]);
+        const result = await query("SELECT userid, name, email, bio, photo, place, interests, latitude, longitude, about FROM users WHERE userid = $1", [userId]);
 
         if (result.length === 0) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -136,6 +136,8 @@ export async function GET(req: NextRequest) {
             place: user.place,
             interests: user.interests,
             about: parsedAbout,  // array or null
+            longitude: user.longitude || null,
+            latitude: user.latitude || null,
         });
     } catch (error) {
         console.error("GET Error:", error);
