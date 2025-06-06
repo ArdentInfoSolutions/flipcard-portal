@@ -23,8 +23,10 @@ export interface PostItem {
   isLiked?: boolean | null;
   bookmarks?: number | null;
   isBookmarked?: boolean | null;
+  photo?: string;
   createdAt: string;
   type?: 'image' | 'video' | 'web' | 'text';
+  
 }
 
 
@@ -35,6 +37,8 @@ export interface UserProfile {
   bio: string
   photo: string
   place: string
+  latitude: number
+  longitude: number
   interests: string[]
   followers: string[]
   following: string[]

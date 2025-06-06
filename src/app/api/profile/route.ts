@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
     try {
         const body = await req.json();
-        const { userId, name, email, bio, photo, place, interests, about } = body;
+        const { userId, name, email, bio, photo, place, latitude, longitude, interests, about } = body;
 
         if (!userId) {
             return NextResponse.json({ message: "User ID is required for update" }, { status: 400 });
@@ -84,29 +84,26 @@ export async function PUT(req: NextRequest) {
 
         const interestsArray = Array.isArray(interests) ? interests : [];
 
-        // Save 'about' as JSON string if it's an array, else empty string or null
         const aboutJson = Array.isArray(about) ? JSON.stringify(about) : null;
-        // Update query depending on if photo was uploaded or not
+
+        // Update query depending on photo uploaded or not, including latitude and longitude
         const updateQuery = savedPhotoPath
-            ? `UPDATE users SET name = $1, bio = $2, photo = $3, place = $4, interests = $5, about = $6, updated_at = CURRENT_TIMESTAMP WHERE userid = $7`
-            : `UPDATE users SET name = $1, bio = $2, place = $3, interests = $4, about = $5, updated_at = CURRENT_TIMESTAMP WHERE userid = $6`;
+            ? `UPDATE users SET name = $1, bio = $2, photo = $3, place = $4, latitude = $5, longitude = $6, interests = $7, about = $8, updated_at = CURRENT_TIMESTAMP WHERE userid = $9`
+            : `UPDATE users SET name = $1, bio = $2, place = $3, latitude = $4, longitude = $5, interests = $6, about = $7, updated_at = CURRENT_TIMESTAMP WHERE userid = $8`;
 
         const values = savedPhotoPath
-            ? [name, bio, savedPhotoPath, place, interestsArray, aboutJson, userId]
-            : [name, bio, place, interestsArray, aboutJson, userId];
+            ? [name, bio, savedPhotoPath, place, latitude, longitude, interestsArray, aboutJson, userId]
+            : [name, bio, place, latitude, longitude, interestsArray, aboutJson, userId];
 
         await query(updateQuery, values);
-        
-
 
         return NextResponse.json({ message: "Profile updated successfully" });
-
     } catch (error: any) {
         console.error("❌ PUT Error:", error.message || error);
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
     }
 }
-
+  
 export async function GET(req: NextRequest) {
     try {
         const userId = req.nextUrl.searchParams.get("userId");
@@ -115,7 +112,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: "Missing userId" }, { status: 400 });
         }
 
-        const result = await query("SELECT userid, name, email, bio, photo, place, interests, about FROM users WHERE userid = $1", [userId]);
+        const result = await query("SELECT userid, name, email, bio, photo, place, interests, latitude, longitude, about FROM users WHERE userid = $1", [userId]);
 
         if (result.length === 0) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -139,6 +136,8 @@ export async function GET(req: NextRequest) {
             place: user.place,
             interests: user.interests,
             about: parsedAbout,  // array or null
+            longitude: user.longitude || null,
+            latitude: user.latitude || null,
         });
     } catch (error) {
         console.error("GET Error:", error);

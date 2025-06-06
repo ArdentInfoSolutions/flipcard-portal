@@ -18,7 +18,6 @@ import type { UserProfile } from "@/lib/types";
 import { LocationSearch } from "@/components/profile/LocationSearch";
 
 
-
 export default function ProfileUpdateForm() {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -32,6 +31,8 @@ export default function ProfileUpdateForm() {
     bio: "",
     photo: "",
     place: "",
+    latitude: 0,
+    longitude: 0,
     interests: [],
     about: [],
   });
@@ -209,9 +210,19 @@ export default function ProfileUpdateForm() {
   
 
   
-  function handleLocationSelect(location: string): void {
-    setFormData((prev) => ({ ...prev, place: location }));
+  function handleLocationSelect(location: {
+    name: string;
+    lat: number;
+    lon: number;
+  }): void {
+    setFormData((prev) => ({
+      ...prev,
+      place: location.name,
+      latitude: Number(location.lat),
+      longitude: Number(location.lon),
+    }));
   }
+  
 
   // if (!currentUser) {
   //   return <div>Loading user data...</div>;

@@ -107,17 +107,18 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
   const isWebPost = !item.images?.[0]?.url && !item.links_or_images?.[0];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-md p-3 max-w-3xl mx-auto space-y-2">
+    <div className="bg-white border border-gray-200 rounded-xl shadow-md p-3 max-w-3xl mx-auto ">
       {/* User Info */}
       <div
         onClick={handleProfileClick}
-        className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded p-1 select-none"
+        className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded p-1 select-none mb-2"
       >
         <UserAvatar
-          userLogo={item.userLogo}
+          userLogo={item.photo || item.userLogo}
           userName={item.userName ?? "User"}
           size={36}
         />
+
         <div>
           <p className="font-semibold text-xs">{item.userName}</p>
           {item.createdAt && (
@@ -129,18 +130,18 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
       </div>
 
       {/* Title */}
-      <h3 className="text-xl font-bold">{item.title}</h3>
+      <h3 className="text-xl font-bold mb-1">{item.title}</h3>
 
       {/* Content */}
-      <div className="flex gap-4 items-start">
-        <div className="flex-1 text-gray-700 text-l leading-tight">
+      <div className="flex gap-4 items-start mb-2">
+        <div className="flex-1 text-gray-700 text-2 leading-tight">
           {item.description}
           {safeUrl && (
             <a
               href={safeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="block mt-1 text-[9px] text-blue-500 underline break-all"
+              className="block  text-[8px] text-blue-500 underline break-all"
             >
               {hostname}
               {safeUrl.includes("/") &&
@@ -154,7 +155,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
        
         {(item.postType === "images" || item.postType === "videos") &&
           (item.images?.[0]?.url || item.links_or_images?.[0]) && (
-            <div className="w-32 h-32 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+            <div className="w-28 h-28 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 self-start">
               <Image
                 src={
                   item.images?.[0]?.url || item.links_or_images?.[0] || "/placeholder.svg"

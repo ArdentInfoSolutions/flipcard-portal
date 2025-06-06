@@ -27,13 +27,14 @@ export async function GET(req: NextRequest) {
 
         const results = places.map((place: any) => ({
             name: place.display_name,
-            lat: place.lat,
-            lon: place.lon,
+            lat: parseFloat(place.lat),
+            lon: parseFloat(place.lon),
             city: place.address?.city || place.address?.town || place.address?.village || null,
             state: place.address?.state || null,
             country: place.address?.country || null,
             postcode: place.address?.postcode || null,
         }));
+        
 
         return NextResponse.json({
             code: 200,
