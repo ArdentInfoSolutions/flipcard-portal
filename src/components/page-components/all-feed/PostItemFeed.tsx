@@ -72,7 +72,8 @@ export function PostItemFeed() {
           const userLogo =
             post.userLogo && post.userLogo.trim() !== ""
               ? post.userLogo
-              : session?.user?.image || "/placeholder.svg";
+              : `https://i.pravatar.cc/150?u=${encodeURIComponent(post.userName)}`;
+        
 
           return {
             ...post,
