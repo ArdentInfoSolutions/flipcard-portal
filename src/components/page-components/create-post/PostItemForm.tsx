@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,8 @@ interface PostItemFormProps {
 
 export default function PostItemForm({ showIn }: PostItemFormProps) {
   const postType = showIn;
+  const router = useRouter();
+  const { data: session } = useSession();
 
   const [title, setTitle] = useState("");
   const [promo, setPromo] = useState("");
@@ -22,16 +25,17 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
   const [categories, setCategories] = useState<string[]>([]);
   const [newCategory, setNewCategory] = useState("");
-  const router = useRouter();
 
   const [links, setLinks] = useState<{ title: string; url: string }[]>([]);
   const [linkTitle, setLinkTitle] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
+  const [isShortVideo, setIsShortVideo] = useState(false);
 
   const [imageItems, setImageItems] = useState<{ file: File | null; url: string }[]>([{ file: null, url: "" }]);
-  const [videoItems, setVideoItems] = useState<{ videoUrl: string; url: string }[]>([{ videoUrl: "", url: "" }]);
 
-  const { data: session } = useSession();
+  const [videoItems, setVideoItems] = useState<{ videoUrl: string; url: string}[]>([
+    { videoUrl: "", url: "" },
+  ]);
 
   const handleAddCategory = () => {
     if (newCategory.trim()) {
@@ -69,25 +73,25 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
     e.preventDefault();
 
     if (!title.trim()) return alert("Title is required");
+    if (postType !== "videos" && !description.trim()) return alert("Description is required");
     if (categories.length === 0) return alert("Add at least one category");
 
-    if (postType === "web" && links.length === 0)
-      return alert("Add at least one link");
+    if (postType === "web" && links.length === 0) return alert("Add at least one link");
     if (postType === "images" && imageItems.filter((item) => item.file).length === 0)
       return alert("Upload at least one image");
     if (postType === "videos" && videoItems.filter((v) => v.videoUrl.trim()).length === 0)
       return alert("Add at least one video URL");
 
     try {
-      if (!session || !session.user || !session.user.id) {
+      if (!session?.user?.id) {
         alert("You must be logged in to submit a post.");
         return;
       }
 
       let imagesBase64: { base64: string; url: string }[] = [];
-      let videos: { videoUrl: string; url: string }[] = [];
+      let videos: { videoUrl: string; url: string}[] = [];
 
-      if (postType === "images") {
+      if (postType === "images" || postType === "videos") {
         imagesBase64 = await Promise.all(
           imageItems.map(async (item) => {
             if (!item.file) throw new Error("Image file missing");
@@ -97,29 +101,25 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
         );
       }
 
-      if (postType === "videos") {
-        videos = videoItems.filter((v) => v.videoUrl.trim());
-      }
-      console.log("🧠 Session:", session);
-      console.log("📸 Profile photo from session:", session?.user?.image);
-
+      
 
       const payload: any = {
         title: title.trim(),
         promo: promo.trim() || null,
-        description: description.trim(),
+        description: postType === "videos" ? null : description.trim(),
         postType,
         categories,
         userId: String(session.user.id),
-        profilePhoto: session.user.image || "", // ✅ include session image
+        profilePhoto: session.user.image || "",
       };
 
-      // 👇 Add post-type-specific data
       if (postType === "web") payload.webLinks = links;
-      else if (postType === "videos") payload.videos = videos;
-      else if (postType === "images") payload.images = imagesBase64;
-
-      console.log("🚀 Sending payload:", payload);
+      if (postType === "videos") {
+        payload.videos = videos;
+        payload.thumbnail = imagesBase64[0]; // first one
+        payload.isShortvideo = isShortVideo; // assuming you have a state for this
+      }
+      if (postType === "images") payload.images = imagesBase64;
 
       const res = await fetch("/api/postitem", {
         method: "POST",
@@ -135,24 +135,22 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
         data = { error: rawText };
       }
 
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
 
       alert("✅ Post created successfully!");
-      // Reset form
       setTitle("");
       setPromo("");
       setDescription("");
       setCategories([]);
       setLinks([]);
       setImageItems([{ file: null, url: "" }]);
-      setVideoItems([{ videoUrl: "", url: "" }]);
+      setVideoItems([{ videoUrl: "", url: "",}]);
     } catch (error) {
       alert("❌ Error: " + (error as Error).message);
       console.error("Submit error:", error);
     }
   };
+
   return (
     <form onSubmit={handleSubmit} className="relative space-y-6 p-4 max-w-2xl mx-auto bg-white rounded shadow-md">
       <button
@@ -163,24 +161,42 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
         Close
       </button>
 
-      <div>
+      <div className="flex items-center gap-4  ">
         <Label>Post Type: {postType.toUpperCase()}</Label>
+
+        {postType === "videos" && (
+          <Button
+            type="button"
+            variant="outline"
+            className="bg-white-100 text-black-800 font-semibold px-4 py-1 text-sm"
+          >
+            Short Video
+          </Button>
+        )}
       </div>
+
+     
+      
+
 
       <div>
         <Label>Title</Label>
         <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
       </div>
 
-      <div>
-        <Label>Promo Line</Label>
-        <Input value={promo} onChange={(e) => setPromo(e.target.value)} />
-      </div>
+      {postType === "videos" && (
+        <div>
+          <Label>Promo Line</Label>
+          <Input value={promo} onChange={(e) => setPromo(e.target.value)} />
+        </div>
+      )}
 
-      <div>
-        <Label>Description</Label>
-        <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
-      </div>
+      {postType !== "videos" && (
+        <div>
+          <Label>Description</Label>
+          <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
+        </div>
+      )}
 
       {postType === "web" && (
         <div>
@@ -206,18 +222,28 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
           <Label>Upload Image & URL Link</Label>
           {imageItems.map((item, index) => (
             <div key={index} className="flex flex-col md:flex-row gap-2 mt-2 items-center">
-              <Input type="file" accept="image/*" onChange={(e) =>
-                setImageItems((prev) =>
-                  prev.map((it, i) =>
-                    i === index ? { ...it, file: e.target.files?.[0] || null } : it
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  setImageItems((prev) =>
+                    prev.map((it, i) =>
+                      i === index ? { ...it, file: e.target.files?.[0] || null } : it
+                    )
                   )
-                )} />
-              <Input placeholder="URL Link" value={item.url} onChange={(e) =>
-                setImageItems((prev) =>
-                  prev.map((it, i) =>
-                    i === index ? { ...it, url: e.target.value } : it
+                }
+              />
+              <Input
+                placeholder="URL Link"
+                value={item.url}
+                onChange={(e) =>
+                  setImageItems((prev) =>
+                    prev.map((it, i) =>
+                      i === index ? { ...it, url: e.target.value } : it
+                    )
                   )
-                )} />
+                }
+              />
               <Button type="button" variant="ghost" onClick={() =>
                 setImageItems((prev) => prev.filter((_, i) => i !== index))}>❌</Button>
             </div>
@@ -228,35 +254,62 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       )}
 
       {postType === "videos" && (
-        <div>
-          <Label>Video URL & URL Link</Label>
-          {videoItems.map((item, index) => (
-            <div key={index} className="flex flex-col md:flex-row gap-2 mt-2 items-center">
-              <Input placeholder="Video URL" value={item.videoUrl} onChange={(e) =>
-                setVideoItems((prev) =>
-                  prev.map((it, i) =>
-                    i === index ? { ...it, videoUrl: e.target.value } : it
-                  )
-                )} />
-              <Input placeholder="URL Link" value={item.url} onChange={(e) =>
-                setVideoItems((prev) =>
-                  prev.map((it, i) =>
-                    i === index ? { ...it, url: e.target.value } : it
-                  )
-                )} />
-              <Button type="button" variant="ghost" onClick={() =>
-                setVideoItems((prev) => prev.filter((_, i) => i !== index))}>❌</Button>
-            </div>
-          ))}
-          <Button type="button" className="mt-2" onClick={() =>
-            setVideoItems((prev) => [...prev, { videoUrl: "", url: "" }])}>➕ Add More Videos</Button>
+        <div className="space-y-4">
+          <div>
+            <Label>Upload Thumbnail</Label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setImageItems([{ file, url: URL.createObjectURL(file) }]);
+                }
+              }}
+            />
+          </div>
+
+          <div>
+            <Label>Video URL, Link & Short Toggle</Label>
+            {videoItems.map((item, index) => (
+              <div key={index} className="flex flex-col md:flex-row gap-2 mt-2 items-center">
+                <Input
+                  placeholder="Video URL"
+                  value={item.videoUrl}
+                  onChange={(e) =>
+                    setVideoItems((prev) =>
+                      prev.map((it, i) =>
+                        i === index ? { ...it, videoUrl: e.target.value } : it
+                      )
+                    )
+                  }
+                />
+                <Input
+                  placeholder="Website URL"
+                  value={item.url}
+                  onChange={(e) =>
+                    setVideoItems((prev) =>
+                      prev.map((it, i) =>
+                        i === index ? { ...it, url: e.target.value } : it
+                      )
+                    )
+                  }
+                />
+               
+                <Button type="button" variant="ghost" onClick={() =>
+                  setVideoItems((prev) => prev.filter((_, i) => i !== index))}>❌</Button>
+              </div>
+            ))}
+            <Button type="button" className="mt-2" onClick={() =>
+              setVideoItems((prev) => [...prev, { videoUrl: "", url: "" }])}>➕ Add More Videos</Button>
+          </div>
         </div>
       )}
 
-      <div>
-        <Label>Categories</Label>
+      <div className="mt-6">
+        <Label>Tags</Label>
         <div className="flex gap-2 mt-2">
-          <Input placeholder="Add category" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} />
+          <Input placeholder="Add Tag" value={newCategory} onChange={(e) => setNewCategory(e.target.value)} />
           <Button type="button" onClick={handleAddCategory}>Add</Button>
         </div>
         <ul className="mt-3 flex flex-wrap gap-2">
