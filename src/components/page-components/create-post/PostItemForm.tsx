@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react"; // ✅ Added for user session
+import { useSession } from "next-auth/react";
 
 type PostType = "web" | "videos" | "images";
 
@@ -28,15 +28,10 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
   const [linkTitle, setLinkTitle] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
 
-  const [imageItems, setImageItems] = useState<
-    { file: File | null; url: string }[]
-  >([{ file: null, url: "" }]);
+  const [imageItems, setImageItems] = useState<{ file: File | null; url: string }[]>([{ file: null, url: "" }]);
+  const [videoItems, setVideoItems] = useState<{ videoUrl: string; url: string }[]>([{ videoUrl: "", url: "" }]);
 
-  const [videoItems, setVideoItems] = useState<
-    { videoUrl: string; url: string }[]
-  >([{ videoUrl: "", url: "" }]);
-
-  const { data: session } = useSession(); // ✅ Fetching logged-in user
+  const { data: session } = useSession();
 
   const handleAddCategory = () => {
     if (newCategory.trim()) {
@@ -75,20 +70,20 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
     if (!title.trim()) return alert("Title is required");
     if (categories.length === 0) return alert("Add at least one category");
+
     if (postType === "web" && links.length === 0)
       return alert("Add at least one link");
-    if (
-      postType === "images" &&
-      imageItems.filter((item) => item.file).length === 0
-    )
+    if (postType === "images" && imageItems.filter((item) => item.file).length === 0)
       return alert("Upload at least one image");
-    if (
-      postType === "videos" &&
-      videoItems.filter((v) => v.videoUrl.trim()).length === 0
-    )
+    if (postType === "videos" && videoItems.filter((v) => v.videoUrl.trim()).length === 0)
       return alert("Add at least one video URL");
 
     try {
+      if (!session || !session.user || !session.user.id) {
+        alert("You must be logged in to submit a post.");
+        return;
+      }
+
       let imagesBase64: { base64: string; url: string }[] = [];
       let videos: { videoUrl: string; url: string }[] = [];
 
@@ -105,11 +100,9 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       if (postType === "videos") {
         videos = videoItems.filter((v) => v.videoUrl.trim());
       }
+      console.log("🧠 Session:", session);
+      console.log("📸 Profile photo from session:", session?.user?.image);
 
-      if (!session || !session.user || !session.user.id) {
-        alert("You must be logged in to submit a post.");
-        return;
-      }
 
       const payload: any = {
         title: title.trim(),
@@ -117,12 +110,16 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
         description: description.trim(),
         postType,
         categories,
-        userId: String(session.user.id), // ✅ Add userId here
+        userId: String(session.user.id),
+        profilePhoto: session.user.image || "", // ✅ include session image
       };
 
+      // 👇 Add post-type-specific data
       if (postType === "web") payload.webLinks = links;
       else if (postType === "videos") payload.videos = videos;
       else if (postType === "images") payload.images = imagesBase64;
+
+      console.log("🚀 Sending payload:", payload);
 
       const res = await fetch("/api/postitem", {
         method: "POST",
@@ -142,7 +139,8 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
         throw new Error(data.error || "Something went wrong");
       }
 
-      alert("Post created successfully!");
+      alert("✅ Post created successfully!");
+      // Reset form
       setTitle("");
       setPromo("");
       setDescription("");
@@ -151,11 +149,10 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       setImageItems([{ file: null, url: "" }]);
       setVideoItems([{ videoUrl: "", url: "" }]);
     } catch (error) {
-      alert("Error: " + (error as Error).message);
+      alert("❌ Error: " + (error as Error).message);
       console.error("Submit error:", error);
     }
   };
-
   return (
     <form onSubmit={handleSubmit} className="relative space-y-6 p-4 max-w-2xl mx-auto bg-white rounded shadow-md">
       <button

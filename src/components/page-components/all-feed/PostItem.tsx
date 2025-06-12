@@ -91,7 +91,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
   };
 
   const handleProfileClick = () => {
-    router.push(`/profile/${item.id}`);
+    if (item.id) router.push(`/profile/${item.id}`);
   };
 
   const handleLike = () => onLike?.(item.id);
@@ -112,9 +112,9 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
         className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded p-1 select-none mb-2"
       >
         <UserAvatar
-          userLogo={item.photo || item.userLogo}
-          userName={item.userName ?? "User"}
-          size={36}
+         userLogo={ item.photo || item.userLogo}
+         userName={item.userName ?? "User"}
+         size={36}
         />
 
         <div>
@@ -136,7 +136,6 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
           </span>
         )}
       </div>
-
 
       {/* Content */}
       <div className="flex gap-4 items-start mb-2">
@@ -161,7 +160,9 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
             <div className="w-28 h-28 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 self-start">
               <Image
                 src={
-                  item.images?.[0]?.url || item.links_or_images?.[0] || "/placeholder.svg"
+                  item.images?.[0]?.url ||
+                  item.links_or_images?.[0] ||
+                  "/placeholder.svg"
                 }
                 alt={item.title || "Post Image"}
                 width={128}
@@ -223,6 +224,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
     </div>
   );
 }
+
 
 // "use client";
 
@@ -340,7 +342,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
 //         className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded p-1 select-none mb-2"
 //       >
 //         <UserAvatar
-//           userLogo={item.photo || item.userLogo}
+//           userLogo={ session?.user.image||item.photo || item.userLogo}
 //           userName={item.userName ?? "User"}
 //           size={36}
 //         />
