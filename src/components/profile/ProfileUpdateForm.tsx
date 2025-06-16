@@ -156,6 +156,13 @@ export default function ProfileUpdateForm() {
     setIsSubmitting(true);
 
     try {
+
+      if (newTitle.trim() && newDetail.trim()) {
+        formData.about = [
+          ...(formData.about || []),
+          { title: newTitle.trim(), details: newDetail.trim() },
+        ];
+      }
       let base64Photo: string | null = null;
 
       if (selectedFile) {

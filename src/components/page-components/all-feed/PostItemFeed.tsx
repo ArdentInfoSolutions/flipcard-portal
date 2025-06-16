@@ -70,9 +70,11 @@ export function PostItemFeed() {
 
           // Use post.userLogo if available, else fallback to session.user.photo, else placeholder
           const userLogo =
-            post.userLogo && post.userLogo.trim() !== ""
-              ? post.userLogo
-              : session?.user?.image || "/placeholder.svg";
+            post.profile_photo && post.profile_photo.trim() !== ""
+              ? post.profile_photo
+              : `https://i.pravatar.cc/150?u=${encodeURIComponent(post.userName)}`;
+        
+        
 
           return {
             ...post,
