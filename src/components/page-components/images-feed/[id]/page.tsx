@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Share, Bookmark } from "lucide-react";
+import {
+    Share,
+    Bookmark,
+    ChevronLeft,
+    ChevronRight,
+    MoreHorizontal,
+} from "lucide-react";
 
 interface PostType {
     id: string;
@@ -26,39 +32,87 @@ export default function ImagePostDetail({
             : (post.links_or_images?.[0] as any)?.url) ?? "";
 
     return (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
-            <div className="bg-white max-w-5xl w-full p-6 rounded-xl shadow-lg relative">
-                <button
-                    className="absolute top-4 right-4 text-gray-500 hover:text-black"
-                    onClick={onClose}
-                >
-                    ❌
-                </button>
+        <div className="fixed inset-0 bg-white z-50 overflow-hidden flex flex-col items-center">
+            <div className="w-full max-w-2xl h-full flex flex-col">
 
-                <div className="flex gap-8">
-                    <div className="w-1/2">
+                {/* Top Bar */}
+                <div className="flex justify-between items-center px-4 py-2 border-b border-gray-200">
+                    <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-black rounded-full"></div>
+                        <h1 className="text-sm font-semibold">Ninjapromo</h1>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon">
+                            <ChevronLeft className="w-5 h-5" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                            <ChevronRight className="w-5 h-5" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-5 h-5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={onClose}>
+                            ❌
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Main Image */}
+                <div className="flex justify-center py-2 bg-black">
+                    <div className="w-full max-w-2xl">
                         <Image
                             src={mainImage}
                             alt={post.title}
-                            width={600}
-                            height={400}
-                            className="rounded-xl object-cover"
+                            width={1280}
+                            height={720}
+                            className="w-full max-h-[320px] rounded-none object-cover"
                         />
                     </div>
-                    <div className="w-1/2 space-y-4">
-                        <h1 className="text-2xl font-bold">{post.title}</h1>
-                        <p className="text-muted-foreground">{post.description}</p>
-                        <div className="flex gap-4 mt-4">
-                            <Button>Visit</Button>
-                            <Button variant="outline">
-                                <Share className="w-4 h-4 mr-2" /> Share
+                </div>
+
+                {/* Description & Actions */}
+                <div className="px-4 py-4 w-full max-w-2xl overflow-y-auto">
+                    <div className="flex flex-col md:flex-row justify-between gap-4">
+                        {/* Left Column */}
+                        <div className="md:w-2/3 space-y-3">
+                            <h2 className="text-base font-semibold">
+                                Instagram Influencer Marketing: The Complete Guide for 2025
+                            </h2>
+                            <p className="text-sm text-muted-foreground">
+                                Images may be subject to copyright. Learn More
+                            </p>
+
+                            {/* Share and Save Buttons (side by side) */}
+                            <div className="flex gap-3 w-full">
+                                <Button
+                                    variant="outline"
+                                    className="w-full py-5 rounded-xl justify-center text-base bg-gray-100 hover:bg-gray-200"
+                                >
+                                    <Share className="w-5 h-5 mr-2" />
+                                    Share
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className="w-full py-5 rounded-xl justify-center text-base bg-gray-100 hover:bg-gray-200"
+                                >
+                                    <Bookmark className="w-5 h-5 mr-2" />
+                                    Save
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Right Column */}
+                        <div className="md:w-1/3 flex flex-col items-start md:items-end gap-3">
+                            <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-auto">
+                                Visit
                             </Button>
-                            <Button variant="ghost">
-                                <Bookmark className="w-4 h-4 mr-2" /> Save
-                            </Button>
+                            <div className="text-sm text-muted-foreground cursor-pointer hover:underline">
+                                Learn More
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     );
