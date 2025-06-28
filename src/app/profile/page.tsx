@@ -125,31 +125,7 @@ export default function ProfilePage() {
       <div className="mt-6">
         <div className="flex items-center justify-between gap-10">
           <h2 className="text-lg font-bold py-4">My Posts</h2>
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => router.push("/create/website")}
-            >
-              <PlusIcon className="mr-2 h-4 w-4" />
-              Add Website
-            </Button>
-
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="lg">
-                  <PlusIcon className="mr-2 h-4 w-4" />
-                  Create Post
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleAction("web")}>Web Post</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAction("images")}>Image Post</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAction("videos")}>Video Post</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+         
         </div>
 
         <PostItemFeed />

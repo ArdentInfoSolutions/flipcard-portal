@@ -195,14 +195,16 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 };
 
 return (
-    <Card className="w-full max-w-3xl mx-auto">
+    <Card className="w-full max-w-4xl mx-auto p-4 sm:p-6">
         <CardHeader>
             <CardTitle>Website Details</CardTitle>
         </CardHeader>
+
         <form onSubmit={handleSubmit}>
             <CardContent className="space-y-6">
-                <div className="space-y-4">
-                    <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* Website Name */}
+                    <div className="col-span-full">
                         <Label htmlFor="websiteName">Website Name</Label>
                         <Input
                             id="websiteName"
@@ -214,7 +216,8 @@ return (
                         />
                     </div>
 
-                    <div>
+                    {/* Overview */}
+                    <div className="col-span-full">
                         <Label htmlFor="overview">Overview</Label>
                         <Textarea
                             id="overview"
@@ -229,7 +232,7 @@ return (
                     {/* Cover Photo Upload */}
                     <div>
                         <Label>Cover Photo</Label>
-                        <div className="border p-2 rounded-lg space-y-2 w-40">
+                        <div className="border p-2 rounded-lg space-y-2 w-full max-w-xs">
                             <Input
                                 type="file"
                                 accept="image/*"
@@ -252,9 +255,9 @@ return (
                     </div>
 
                     {/* Logo Upload */}
-                    <div className="mt-4">
+                    <div>
                         <Label>Logo</Label>
-                        <div className="border p-2 rounded-lg space-y-2 w-40">
+                        <div className="border p-2 rounded-lg space-y-2 w-full max-w-xs">
                             <Input
                                 type="file"
                                 accept="image/*"
@@ -275,58 +278,59 @@ return (
                             )}
                         </div>
                     </div>
+                </div>
 
-                    {/* Website Images Upload (Multiple) */}
-                    <div className="mt-4">
-                        <Label>Website Images</Label>
-                        <div className="flex space-x-4 overflow-x-auto py-2">
-                            {formData.images?.map((img: any, index: number) => (
-                                <div
-                                    key={index}
-                                    className="relative flex-shrink-0 border rounded-lg p-1 bg-white shadow-md"
-                                >
-                                    <img
-                                        src={URL.createObjectURL(img)}
-                                        alt={`Image ${ index + 1 } `}
-                                        className="h-32 w-32 object-cover rounded-md"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            const updated = [...formData.images];
-                                            updated.splice(index, 1);
-                                            updateField("images", updated);
-                                        }}
-                                        className="absolute top-1 right-1 text-white text-xs px-1 py-0.5 rounded"
-                                    >
-                                        ❌
-                                    </button>
-                                </div>
-                            ))}
-                            {/* Image Upload Input */}
-                            {formData.images?.length < 10 && (
-                                <Input
-                                    type="file"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={async (e) => {
-                                        const files = Array.from(e.target.files || []);
-                                        const remainingSlots = 10 - (formData.images?.length || 0);
-                                        const limitedFiles = files.slice(0, remainingSlots);
-
-                                        const compressedImages = await Promise.all(
-                                            limitedFiles.map(async (file) => await compressImage(file))
-                                        );
-
-                                        updateField("images", [...(formData.images || []), ...compressedImages]);
-                                    }}
-                                    className="mt-2"
+                {/* Website Images Upload (Multiple) */}
+                <div>
+                    <Label>Website Images</Label>
+                    <div className="flex flex-wrap gap-4 overflow-x-auto py-2">
+                        {formData.images?.map((img: any, index: number) => (
+                            <div
+                                key={index}
+                                className="relative flex-shrink-0 border rounded-lg p-1 bg-white shadow-md"
+                            >
+                                <img
+                                    src={URL.createObjectURL(img)}
+                                    alt={`Image ${index + 1}`}
+                                    className="h-32 w-32 object-cover rounded-md"
                                 />
-                            )}
-                        </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const updated = [...formData.images];
+                                        updated.splice(index, 1);
+                                        updateField("images", updated);
+                                    }}
+                                    className="absolute top-1 right-1 text-white text-xs px-1 py-0.5 rounded"
+                                >
+                                    ❌
+                                </button>
+                            </div>
+                        ))}
                     </div>
+                    {formData.images?.length < 10 && (
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={async (e) => {
+                                const files = Array.from(e.target.files || []);
+                                const remainingSlots = 10 - (formData.images?.length || 0);
+                                const limitedFiles = files.slice(0, remainingSlots);
+                                const compressedImages = await Promise.all(
+                                    limitedFiles.map(async (file) => await compressImage(file))
+                                );
+                                updateField("images", [...(formData.images || []), ...compressedImages]);
+                            }}
+                            className="mt-2"
+                        />
+                    )}
+                </div>
 
-                    <div>
+                {/* Remaining Fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* About */}
+                    <div className="col-span-full">
                         <Label htmlFor="about">About</Label>
                         <Textarea
                             id="about"
@@ -337,7 +341,8 @@ return (
                         />
                     </div>
 
-                    <div>
+                    {/* Tags */}
+                    <div className="col-span-full">
                         <Label htmlFor="tags">Tags</Label>
                         <Input
                             id="tags"
@@ -347,9 +352,10 @@ return (
                         />
                     </div>
 
-                    <div>
-                        <Label>Events and Offeres</Label>
-                        <div className="border p-2 rounded-lg space-y-2 w-40">
+                    {/* Events and Offers */}
+                    <div className="col-span-full">
+                        <Label>Events and Offers</Label>
+                        <div className="border p-2 rounded-lg space-y-2 w-full max-w-xs">
                             <Input
                                 type="file"
                                 name="eventsImage"
@@ -358,24 +364,22 @@ return (
                             />
                             {formData.events && formData.events[0]?.image && (
                                 <img
-                                    src={ URL.createObjectURL(formData.events[0].image)}
+                                    src={URL.createObjectURL(formData.events[0].image)}
                                     alt="event"
                                     className="h-28 w-28 object-cover rounded-md"
                                 />
                             )}
-                            <input 
+                            <Input
                                 type="text"
                                 placeholder="Event Link"
                                 value={formData.events[0]?.link || ""}
                                 onChange={handleEventLinkChange}
-                                className="border rounded-md p-1 w-full"
-                                />
+                            />
                         </div>
-                       
                     </div>
 
-
-                    <div>
+                    {/* What's New */}
+                    <div className="col-span-full">
                         <Label htmlFor="whatsNew">What's New</Label>
                         <Textarea
                             id="whatsNew"
@@ -385,64 +389,55 @@ return (
                         />
                     </div>
 
-                    <div>
+                    {/* Top Pages */}
+                    <div className="col-span-full space-y-4">
                         <Label>Top Pages</Label>
                         {formData.topPages.map((page, index) => (
-                            <div key={index} className="space-y-2 border p-2 rounded-lg">
+                            <div key={index} className="border p-2 rounded-lg space-y-2">
                                 <Input
-                                    placeholder={`Title ${ index + 1 } `}
-                                    maxLength={36}
+                                    placeholder={`Title ${index + 1}`}
                                     value={page.title}
-                                    onChange={(e) =>
-                                        handleTopPageChange(index, "title", e.target.value)
-                                    }
+                                    onChange={(e) => handleTopPageChange(index, "title", e.target.value)}
                                 />
                                 <Textarea
-                                    placeholder={`Description ${ index + 1 } `}
-                                    maxLength={69}
+                                    placeholder={`Description ${index + 1}`}
                                     value={page.description}
-                                    onChange={(e) =>
-                                        handleTopPageChange(index, "description", e.target.value)
-                                    }
+                                    onChange={(e) => handleTopPageChange(index, "description", e.target.value)}
                                     rows={2}
                                 />
                                 <Input
-                                    placeholder={`Link ${ index + 1 } `}
+                                    placeholder={`Link ${index + 1}`}
                                     value={page.link}
-                                    onChange={(e) =>
-                                        handleTopPageChange(index, "link", e.target.value)
-                                    }
+                                    onChange={(e) => handleTopPageChange(index, "link", e.target.value)}
                                 />
                             </div>
                         ))}
-                        <Button type="button" onClick={addTopPage} className="mt-2">
+                        <Button type="button" onClick={addTopPage}>
                             ➕ Add Another Top Page
                         </Button>
                     </div>
 
-                    
-                    <div>
+                    {/* Website Support */}
+                    <div className="col-span-full space-y-2">
                         <Label htmlFor="phone">Website Support</Label>
-                        <div className="space-y-4 border p-2 rounded-lg">
-                            <Input
-                                id="phone"
-                                name="phone"
-                                placeholder="Phone No."
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                            />
-                            <Input
-                                id="email"
-                                name="email"
-                                placeholder="Support Email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                            />
-                        </div>
-
+                        <Input
+                            id="phone"
+                            name="phone"
+                            placeholder="Phone No."
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                        />
+                        <Input
+                            id="email"
+                            name="email"
+                            placeholder="Support Email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                        />
                     </div>
 
-                    <div>
+                    {/* Privacy Policy */}
+                    <div className="col-span-full">
                         <Label htmlFor="privacyPolicy">Privacy Policy URL</Label>
                         <Input
                             id="privacyPolicy"
@@ -452,7 +447,8 @@ return (
                         />
                     </div>
 
-                    <div>
+                    {/* Address */}
+                    <div className="col-span-full">
                         <Label htmlFor="address">Address</Label>
                         <Textarea
                             id="address"
@@ -462,8 +458,9 @@ return (
                             rows={3}
                         />
                     </div>
-                    {/* Input for Google Maps URL */}
-                    <div>
+
+                    {/* Google Map Link */}
+                    <div className="col-span-full">
                         <Label htmlFor="googleMapLink">Google Map Link</Label>
                         <Input
                             id="googleMapLink"
@@ -472,22 +469,21 @@ return (
                             onChange={handleInputChange}
                             placeholder="https://www.google.com/maps/place/..."
                         />
-
                     </div>
-                    </div>
-
-                
+                </div>
             </CardContent>
-            <CardFooter className="flex justify-between">
-                <Button type="button" variant="outline">
+
+            <CardFooter className="flex flex-col sm:flex-row gap-4 justify-between items-center mt-4">
+                <Button type="button" variant="outline" className="w-full sm:w-auto">
                     Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
                     {isSubmitting ? "Saving..." : "Save Website"}
                 </Button>
             </CardFooter>
         </form>
     </Card>
+
 );
 
 }
