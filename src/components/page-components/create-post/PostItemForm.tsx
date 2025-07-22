@@ -71,7 +71,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
     if (!title.trim()) return alert("Title is required");
     if (postType !== "videos" && !description.trim()) return alert("Description is required");
-    if (categories.length === 0) return alert("Add at least one category");
+   // if (categories.length === 0) return alert("Add at least one category");
     if (postType === "web" && links.length === 0) return alert("Add at least one link");
     if (postType === "images" && imageItems.filter((item) => item.file).length === 0)
       return alert("Upload at least one image");
@@ -166,7 +166,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       </div>
 
       <div>
-        <Label>Title</Label>
+        <Label>Title<span style={{ color: 'red' }}>*</span></Label>
         <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
       </div>
 
@@ -220,7 +220,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       {postType === "videos" && (
         <div className="space-y-4">
           <div>
-            <Label>Upload Thumbnail</Label>
+            <Label>Upload Thumbnail<span style={{ color: 'red' }}>*</span></Label>
             <Input type="file" accept="image/*" onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) {
@@ -230,7 +230,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
           </div>
 
           <div>
-            <Label>Video URL, Link & Short Toggle</Label>
+            <Label>Video URL, Link & Short Toggle<span style={{ color: 'red' }}>*</span></Label>
             {videoItems.map((item, index) => (
               <div key={index} className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full">
                 <Input className="flex-1" placeholder="Video URL" value={item.videoUrl} onChange={(e) => setVideoItems((prev) => prev.map((it, i) => i === index ? { ...it, videoUrl: e.target.value } : it))} />
