@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Check } from "lucide-react"; // or any icon you like
+
 
 type PostType = "web" | "videos" | "images";
 
@@ -86,7 +88,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
       let imagesBase64: { base64: string; url: string }[] = [];
       let videos: { videoUrl: string; url: string }[] = [];
-
+      
       if (postType === "images" || postType === "videos") {
         imagesBase64 = await Promise.all(
           imageItems.map(async (item) => {
@@ -139,12 +141,17 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       setLinks([]);
       setImageItems([{ file: null, url: "" }]);
       setVideoItems([{ videoUrl: "", url: "" }]);
+      setIsShortVideo(false);
     } catch (error) {
       alert("❌ Error: " + (error as Error).message);
       console.error("Submit error:", error);
     }
   };
 
+  const handleToggle = () => {
+    setIsShortVideo(prev => !prev);
+    console.log("Short Video Selected:", !isShortVideo);
+  };
   return (
     <form onSubmit={handleSubmit} className="relative space-y-6 p-4 max-w-2xl w-full mx-auto bg-white rounded shadow-md">
       <button
@@ -154,14 +161,23 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       >
         Close
       </button>
+      
 
       <div className="flex flex-wrap items-center gap-4">
         <Label>Post Type: {postType.toUpperCase()}</Label>
 
         {postType === "videos" && (
-          <Button type="button" variant="outline" className="px-4 py-1 text-sm">
-            Short Video
-          </Button>
+         <Button
+      type="button"
+      onClick={handleToggle}
+      variant="outline"
+      className={`group flex items-center gap-2 px-4 py-2 text-sm rounded-lg border transition-colors duration-200
+        ${isShortVideo ? "border-blue-600 bg-blue-50 text-blue-700" : "bg-white text-gray-800"}
+        hover:border-blue-400`}
+    >
+      {isShortVideo && <Check className="w-4 h-4 text-blue-600" />}
+      Short Video
+    </Button>
         )}
       </div>
 
