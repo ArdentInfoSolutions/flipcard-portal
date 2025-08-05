@@ -35,14 +35,18 @@ export function VideoItemsFeed() {
         if (!res.ok) throw new Error("Failed to fetch posts");
 
         const dataRaw: any[] = await res.json();
+                console.log("Fetched posts:", dataRaw);
 
         const data: PostItemType[] = dataRaw.map((post) => ({
           ...post,
           postType: post.post_type,
           links_or_images: post.links_or_images,
+          userName:post.user_name,
+          createdAt:post.created_at,
         }));
 
         const videosOnly = data.filter((post) => post.postType === "videos");
+
         setVideoPosts(videosOnly);
         setLoading(false);
       } catch (err: any) {
@@ -62,10 +66,94 @@ export function VideoItemsFeed() {
       {videoPosts.length === 0 && <p>No video posts found.</p>}
 
       {videoPosts.map((post) => (
-        <VideoPostCard key={post.id} post={post} />
+        <VideoPostCardExtended key={post.id} post={post}/>
+
+      ))}
+
+      {videoPosts.map((post) => (
+        <VideoPostCard key={post.id} post={post}/>
+
       ))}
     </div>
   );
+}
+
+
+
+import Image from 'next/image'
+
+ function VideoPostCardExtended({ post }: { post: PostItemType }) {
+  const [likes, setLikes] = useState(post.likes);
+  const [isLiked, setIsLiked] = useState(post.isLiked);
+  const [bookmarks, setBookmarks] = useState(post.bookmarks);
+  const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked);
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikes((prev) => prev + (isLiked ? -1 : 1));
+  };
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+    setBookmarks((prev) => prev + (isBookmarked ? -1 : 1));
+  };
+
+  // Convert videos array properly
+  const videos = post.links_or_images?.map((v) =>
+    typeof v === "string" ? { url: v } : v
+  ) ?? [];
+  return (
+    <div className="max-w-sm rounded-lg shadow-lg overflow-hidden border border-gray-200">
+      {/* Top Section (Image with overlay text) */}
+      <div className="relative">
+        <Image
+          src="/semrush-banner.jpg"
+          alt={post.userName}
+          width={400}
+          height={200}
+          className="w-full h-auto object-cover"
+        />
+        <img
+          src={post.userLogo || "/placeholder-user.png"}
+          alt={post.userName}
+          className="w-10 h-10 rounded-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col justify-center px-4">
+          <h2 className="text-white text-xl font-bold mb-2">
+            {post.title}<span className="text-yellow-400"></span>
+          </h2>
+          <button className="bg-white text-black font-semibold px-4 py-1 rounded-full text-sm w-fit">
+            {post.promo}
+          </button>
+        </div>
+        {/* AI badge icon */}
+        <div className="absolute bottom-2 right-2 bg-cyan-500 text-white text-xs font-bold px-2 py-1 rounded">
+          
+        </div>
+      </div>
+
+      {/* Bottom Section (Details) */}
+      <div className="p-4">
+       
+        {/* Description */}
+      {post.description && (
+        <p className="text-sm font-semibold">{post.description}</p>
+      )}
+      
+        <p className="text-xs text-gray-500 mt-1">{post.userName} • {post.createdAt && new Date(post.createdAt).toLocaleDateString()}</p>
+
+        {/* Action buttons */}
+        <div className="flex gap-2 mt-3">
+          <button className="flex-1 bg-gray-100 text-black rounded-full py-1 text-sm font-medium hover:bg-gray-200">
+            Watch
+          </button>
+          <button className="flex-1 bg-blue-600 text-white rounded-full py-1 text-sm font-medium hover:bg-blue-700">
+            Visit site
+          </button>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function VideoPostCard({ post }: { post: PostItemType }) {
