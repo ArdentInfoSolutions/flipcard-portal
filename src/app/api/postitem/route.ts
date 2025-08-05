@@ -107,7 +107,8 @@ export async function POST(req: NextRequest) {
       images,
       userId,
       profilePhoto,
-      isShortvideo, // from frontend (session)
+      isShortvideo,
+      user_name, // from frontend (session)
     } = body;
 
     if (!userId) {
@@ -156,8 +157,8 @@ export async function POST(req: NextRequest) {
     // 💾 Insert post into DB
     const result = await query(
       `INSERT INTO postitem 
-      (title, promo, description, post_type, categories, links_or_images, user_id, profile_photo,is_short_video)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      (title, promo, description, post_type, categories, links_or_images, user_id, profile_photo,is_short_video,user_name)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10)
       RETURNING *`,
       [
         title,
@@ -168,7 +169,8 @@ export async function POST(req: NextRequest) {
         JSON.stringify(content),
         userId,
         finalPhoto,
-        isShortvideo
+        isShortvideo,
+        user_name,
       ]
     );
 
