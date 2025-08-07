@@ -65,16 +65,16 @@ export function VideoItemsFeed() {
   if (error) return <div className="p-4 text-red-600">Error: {error}</div>;
 
   return (
-    <div className="p-4 max-w-3xl mx-auto space-y-8">
+    <div className="p-4 max-w-7xl mx-auto">
       {videoPosts.length === 0 && <p>No video posts found.</p>}
 
-      {videoPosts.map((post) => (
-        <VideoPostCardExtended key={post.id} post={post}/>
-
-      ))}
-
-      
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {videoPosts.map((post) => (
+          <VideoPostCardExtended key={post.id} post={post} />
+        ))}
+      </div>
     </div>
+
   );
 }
 
