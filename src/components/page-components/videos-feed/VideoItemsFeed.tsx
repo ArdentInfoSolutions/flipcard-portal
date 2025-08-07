@@ -109,9 +109,9 @@ import Image from 'next/image'
         <Image
           src={post.videothumb || "/placeholderbg.png"}
           alt="Preview Missing"
-          width={400}
+          width={350}
           height={200}
-          className="w-full h-auto object-cover"
+          className="w-full h-[200px] object-cover"
         />
         <img
           src={post.userLogo || "/placeholder-user.png"}
