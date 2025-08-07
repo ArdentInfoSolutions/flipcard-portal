@@ -21,6 +21,9 @@ export interface PostItemType {
   pages?: any[];
   videos?: any[];
   createdAt?: string;
+  videosurl?: string;
+  videoweburl?: string;
+  videothumb?: string;
 }
 
 export function VideoItemsFeed() {
@@ -70,10 +73,7 @@ export function VideoItemsFeed() {
 
       ))}
 
-      {videoPosts.map((post) => (
-        <VideoPostCard key={post.id} post={post}/>
-
-      ))}
+      
     </div>
   );
 }
@@ -107,8 +107,8 @@ import Image from 'next/image'
       {/* Top Section (Image with overlay text) */}
       <div className="relative">
         <Image
-          src="/semrush-banner.jpg"
-          alt={post.userName}
+          src={post.videothumb || "/placeholderbg.png"}
+          alt="Preview Missing"
           width={400}
           height={200}
           className="w-full h-auto object-cover"
@@ -144,12 +144,22 @@ import Image from 'next/image'
 
         {/* Action buttons */}
         <div className="flex gap-2 mt-3">
-          <button className="flex-1 bg-gray-100 text-black rounded-full py-1 text-sm font-medium hover:bg-gray-200">
+          <a
+            href={post.videosurl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 bg-gray-100 text-black rounded-full py-1 text-sm font-medium hover:bg-gray-200 text-center"
+          >
             Watch
-          </button>
-          <button className="flex-1 bg-blue-600 text-white rounded-full py-1 text-sm font-medium hover:bg-blue-700">
+        </a>
+          <a
+            href={post.videoweburl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 bg-blue-600 text-white rounded-full py-1 text-sm font-medium hover:bg-blue-700 text-center"
+          >
             Visit site
-          </button>
+        </a>
         </div>
       </div>
     </div>
