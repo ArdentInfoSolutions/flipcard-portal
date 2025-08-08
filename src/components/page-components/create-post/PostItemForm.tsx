@@ -34,7 +34,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
   const [isShortVideo, setIsShortVideo] = useState(false);
 
   const [imageItems, setImageItems] = useState<{ file: File | null; url: string }[]>([{ file: null, url: "" }]);
-  const [videoItems, setVideoItems] = useState<{ videoUrl: string; url: string }[]>([{ videoUrl: "", url: "" }]);
+  const [videoItems, setVideoItems] = useState<{ videoUrl: string; url: string }>({ videoUrl: "", url: "" });
 
   const handleAddCategory = () => {
     if (newCategory.trim()) {
@@ -77,7 +77,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
     if (postType === "web" && links.length === 0) return alert("Add at least one link");
     if (postType === "images" && imageItems.filter((item) => item.file).length === 0)
       return alert("Upload at least one image");
-    if (postType === "videos" && videoItems.filter((v) => v.videoUrl.trim()).length === 0)
+    if (postType === "videos" && videoItems.videoUrl.trim().length === 0)
       return alert("Add at least one video URL");
 
     try {
@@ -111,9 +111,12 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
       if (postType === "web") payload.webLinks = links;
       if (postType === "videos") {
-        payload.videos = videos;
-        payload.thumbnail = imagesBase64[0];
+        //payload.videos = videos;
+        payload.videosurl = videoItems.videoUrl;
+        payload.thumbnail = imagesBase64[0].base64;
+        payload.videoweburl = videoItems.url;
         payload.isShortvideo = isShortVideo;
+        payload.user_name = session.user.name || "";
       }
       if (postType === "images") payload.images = imagesBase64;
 
@@ -140,7 +143,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       setCategories([]);
       setLinks([]);
       setImageItems([{ file: null, url: "" }]);
-      setVideoItems([{ videoUrl: "", url: "" }]);
+      setVideoItems({ videoUrl: "", url: "" });
       setIsShortVideo(false);
     } catch (error) {
       alert("❌ Error: " + (error as Error).message);
@@ -247,14 +250,44 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
           <div>
             <Label>Video URL, Link & Short Toggle<span style={{ color: 'red' }}>*</span></Label>
-            {videoItems.map((item, index) => (
-              <div key={index} className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full">
-                <Input className="flex-1" placeholder="Video URL" value={item.videoUrl} onChange={(e) => setVideoItems((prev) => prev.map((it, i) => i === index ? { ...it, videoUrl: e.target.value } : it))} />
-                <Input className="flex-1" placeholder="Website URL" value={item.url} onChange={(e) => setVideoItems((prev) => prev.map((it, i) => i === index ? { ...it, url: e.target.value } : it))} />
-                <Button type="button" variant="ghost" size="icon" onClick={() => setVideoItems((prev) => prev.filter((_, i) => i !== index))}>❌</Button>
-              </div>
-            ))}
-            <Button type="button" className="mt-2" onClick={() => setVideoItems((prev) => [...prev, { videoUrl: "", url: "" }])}>➕ Add More Videos</Button>
+            <div className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full">
+  <Input
+    className="flex-1"
+    placeholder="Video URL"
+    value={videoItems.videoUrl}
+    onChange={(e) =>
+      setVideoItems((prev) => ({
+        ...prev,
+        videoUrl: e.target.value,
+      }))
+    }
+  />
+  <Input
+    className="flex-1"
+    placeholder="Website URL"
+    value={videoItems.url}
+    onChange={(e) =>
+      setVideoItems((prev) => ({
+        ...prev,
+        url: e.target.value,
+      }))
+    }
+  />
+  <Button
+    type="button"
+    variant="ghost"
+    size="icon"
+    onClick={() =>
+      setVideoItems({
+        videoUrl: "",
+        url: "",
+      })
+    }
+  >
+    ❌
+  </Button>
+</div>
+
           </div>
         </div>
       )}

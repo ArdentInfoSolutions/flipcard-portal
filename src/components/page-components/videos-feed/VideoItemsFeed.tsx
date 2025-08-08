@@ -21,6 +21,9 @@ export interface PostItemType {
   pages?: any[];
   videos?: any[];
   createdAt?: string;
+  videosurl?: string;
+  videoweburl?: string;
+  videothumb?: string;
 }
 
 export function VideoItemsFeed() {
@@ -62,19 +65,16 @@ export function VideoItemsFeed() {
   if (error) return <div className="p-4 text-red-600">Error: {error}</div>;
 
   return (
-    <div className="p-4 max-w-3xl mx-auto space-y-8">
+    <div className="p-4 max-w-7xl mx-auto">
       {videoPosts.length === 0 && <p>No video posts found.</p>}
 
-      {videoPosts.map((post) => (
-        <VideoPostCardExtended key={post.id} post={post}/>
-
-      ))}
-
-      {videoPosts.map((post) => (
-        <VideoPostCard key={post.id} post={post}/>
-
-      ))}
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {videoPosts.map((post) => (
+          <VideoPostCardExtended key={post.id} post={post} />
+        ))}
+      </div>
     </div>
+
   );
 }
 
@@ -107,11 +107,11 @@ import Image from 'next/image'
       {/* Top Section (Image with overlay text) */}
       <div className="relative">
         <Image
-          src="/semrush-banner.jpg"
-          alt={post.userName}
-          width={400}
+          src={post.videothumb || "/placeholderbg.png"}
+          alt="Preview Missing"
+          width={350}
           height={200}
-          className="w-full h-auto object-cover"
+          className="w-full h-[200px] object-cover"
         />
         <img
           src={post.userLogo || "/placeholder-user.png"}
@@ -144,12 +144,22 @@ import Image from 'next/image'
 
         {/* Action buttons */}
         <div className="flex gap-2 mt-3">
-          <button className="flex-1 bg-gray-100 text-black rounded-full py-1 text-sm font-medium hover:bg-gray-200">
+          <a
+            href={post.videosurl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 bg-gray-100 text-black rounded-full py-1 text-sm font-medium hover:bg-gray-200 text-center"
+          >
             Watch
-          </button>
-          <button className="flex-1 bg-blue-600 text-white rounded-full py-1 text-sm font-medium hover:bg-blue-700">
+        </a>
+          <a
+            href={post.videoweburl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 bg-blue-600 text-white rounded-full py-1 text-sm font-medium hover:bg-blue-700 text-center"
+          >
             Visit site
-          </button>
+        </a>
         </div>
       </div>
     </div>
