@@ -198,7 +198,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
       {postType !== "videos" && (
         <div>
-          <Label>Description</Label>
+          <Label>Description<span style={{ color: 'red' }}>*</span></Label>
           <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
       )}
@@ -224,7 +224,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
       {postType === "images" && (
         <div>
-          <Label>Upload Image & URL Link</Label>
+          <Label>Upload Image<span style={{ color: 'red' }}>*</span> & URL Link</Label>
           {imageItems.map((item, index) => (
             <div key={index} className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full">
               <Input type="file" accept="image/*" onChange={(e) => setImageItems((prev) => prev.map((it, i) => i === index ? { ...it, file: e.target.files?.[0] || null } : it))} />
