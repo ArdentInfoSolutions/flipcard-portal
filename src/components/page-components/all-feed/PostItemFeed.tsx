@@ -28,6 +28,7 @@ export interface PostItemType {
   pages?: any[];
   videos?: any[];
   createdAt?: string;
+  videoThumb?: string;
 }
 
 export function PostItemFeed() {
@@ -57,6 +58,7 @@ export function PostItemFeed() {
           let isLiked = post.isLiked ?? false;
           let isBookmarked = post.isBookmarked ?? false;
           let createdAt = post.createdAt ?? "";
+          let videoThumb = post.videoThumb ?? "";
 
           if (postType === "web") {
             url = post.links_or_images?.[0]?.url || "";
@@ -95,6 +97,7 @@ export function PostItemFeed() {
                 : postType === "videos"
                   ? "videos"
                   : undefined,
+                  videoThumb,
           };
         });
 

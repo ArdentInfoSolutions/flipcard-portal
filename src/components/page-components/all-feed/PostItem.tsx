@@ -84,7 +84,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-md p-3 max-w-3xl mx-auto w-full">
+    <div className="bg-blue border border-gray-200 rounded-xl shadow-md p-3 max-w-3xl mx-auto w-full">
       {/* User */}
       <div
         onClick={() => router.push(`/profile/${item.id}`)}
@@ -103,10 +103,23 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
 
       {/* Title + PostType */}
       <div className="flex items-center justify-between flex-wrap gap-1 mb-1">
-        <h3 className="text-base sm:text-lg font-bold">{item.title}</h3>
+        <h3 className="text-base sm:text-lg font-bold">
+          {safeUrl ? ( 
+          <a href={safeUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+            {item.title}
+          </a>
+          ): (
+          <span>{item.title}</span>
+          )}
+          </h3>
         {item.postType && (
           <span className="text-[10px] px-2 py-1 rounded-full bg-gray-100 text-gray-600 capitalize">
             {item.postType}
+            {(item.videoThumb != "") && (
+            <img 
+            src= {item.videoThumb}
+            />
+            )}
           </span>
         )}
       </div>
@@ -164,14 +177,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-4 text-gray-600 text-xs mt-3">
-        <Button
-          variant="outline"
-          className="gap-1 rounded-full border-gray-300 hover:bg-gray-100 flex items-center"
-          onClick={() => session ? onLike?.(item.id) : router.push("/login")}
-        >
-          <Heart className={`h-3 w-3 ${isLiked ? "text-red-500 fill-red-500" : "text-gray-400"}`} />
-          <span>{likes}</span>
-        </Button>
+        
 
         <Button
           variant="outline"
