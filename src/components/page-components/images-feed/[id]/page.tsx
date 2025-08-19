@@ -88,8 +88,8 @@ export default function ImagePostDetail({
                                         alt={post.title}
                                         width={1280}
                                         height={720}
-                                        className="w-full h-full object-cover"
-                                    />
+                                        className="w-full h-full object-contain bg-black"
+                                        />
                                 </SwiperSlide>
                             ))}
                         </Swiper>
