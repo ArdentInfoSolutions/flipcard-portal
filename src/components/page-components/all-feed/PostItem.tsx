@@ -112,14 +112,18 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
           <span>{item.title}</span>
           )}
           </h3>
-        {item.postType && (
-          <span className="text-[10px] px-2 py-1 rounded-full bg-gray-100 text-gray-600 capitalize">
-            {item.postType}
-            {(item.videoThumb != "") && (
+        {item.postType && (item.videothumb != "") && (
+          <span className="w-full sm:w-28 h-48 sm:h-28 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+            
             <img 
-            src= {item.videoThumb}
+            src= {item.videothumb}
+            alt="Preview Missing"
+            width={128}
+            height={128}
+            className="w-full h-full object-cover"
+                unoptimized
             />
-            )}
+            
           </span>
         )}
       </div>
@@ -142,7 +146,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
           )}
         </div>
 
-        {(item.postType === "images" || item.postType === "videos") &&
+        {(item.postType === "images" ) &&
           (item.images?.[0]?.url || item.links_or_images?.[0]) && (
             <div className="w-full sm:w-28 h-48 sm:h-28 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
               <Image

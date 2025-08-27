@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
         }))
       );
     }
-
+    
     // 💾 Insert post into DB
     const result = await query(
       `INSERT INTO postitem 

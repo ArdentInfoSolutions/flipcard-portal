@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from "@/lib/db";
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
-    const { id } = context.params;
+export async function GET(req: NextRequest, context: { params:Promise< { id: string } > }) {
+    const { id } = await context.params;
 
     console.log("✅ Received ID:", id);
 
@@ -39,6 +39,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
             logo: website.logo || null,
             images: website.images || [],
             topPages: website.top_pages || [],
+            privacy_policy: website.privacy_policy || null,
         });
     } catch (error) {
         console.error("❌ Error fetching data:", error);

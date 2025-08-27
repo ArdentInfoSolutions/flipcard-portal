@@ -24,6 +24,7 @@ interface WebsiteData {
         link: string;
         description?: string;
     }[];
+    privacy_policy?:string;
 }
 const handleScrollRight = () => {
     const container = document.getElementById("image-container");
@@ -85,6 +86,7 @@ export default function PreviewPage() {
         logo,
         images = [],
         topPages = [],
+        privacy_policy,
     } = websiteData;
     console.log("Fetched Data:", websiteData);
 
@@ -124,6 +126,7 @@ export default function PreviewPage() {
                         <button className="bg-green-500 text-white px-4 py-2 rounded flex items-center gap-2">
                             Visit <ExternalLinkIcon size={16} />
                         </button>
+                       
                         <button className=" text-green px-4 py-2 rounded">Share</button>
 
                     </div>
@@ -290,7 +293,14 @@ export default function PreviewPage() {
                         <div className="flex items-start gap-3 mb-3">
                             <span className="text-gray-600 text-lg"><i className="fas fa-user-shield"></i></span>
                             <div>
-                                <p className="text-sm font-medium text-gray-700">📍 Privacy Policy</p>
+                                <p>
+                                <a href={privacy_policy} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                          
+className="text-sm text-blue-600 hover:underline pl-6"
+                                >📍 Privacy Policy</a>
+                                </p>
                             </div>
                         </div>
 
