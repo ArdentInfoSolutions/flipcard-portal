@@ -129,7 +129,7 @@ export default function PreviewPage() {
 
                     <div className="mt-4 flex gap-4">
                        <a
-                         href={googleMapsLink?.startsWith("http") ? googleMapsLink : `https://${googleMapsLink}`}
+                         href={topPages[0].link?.startsWith("http") ? topPages[0].link : `https://${topPages[0].link}`}
 
                         target="_blank"
                         rel="noreferrer"
