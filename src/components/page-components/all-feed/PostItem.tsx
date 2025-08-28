@@ -45,7 +45,7 @@ function UserAvatar({
       onError={(e) => {
         (e.currentTarget as HTMLImageElement).src = fallbackUrl;
       }}
-      unoptimized={false}
+      
     />
   );
 }
@@ -121,7 +121,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
             width={128}
             height={128}
             className="w-full h-full object-cover"
-                unoptimized
+                
             />
             
           </span>
@@ -159,7 +159,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
                 width={128}
                 height={128}
                 className="w-full h-full object-cover"
-                unoptimized
+                
               />
             </div>
           )}
