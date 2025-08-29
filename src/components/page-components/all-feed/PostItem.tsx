@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import type { PostItem as PostItemType } from "../../../lib/types";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import {ShareButton} from  "../../common/ShareButton";
 import {
   selectIsPostLiked,
   selectPostLikes,
@@ -90,6 +91,7 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
         onClick={() => router.push(`/profile/${item.id}`)}
         className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded p-1 select-none mb-2"
       >
+        
         <UserAvatar userLogo={item.photo || item.userLogo} userName={item.userName ?? "User"} size={36} />
         <div>
           <p className="font-semibold text-xs">{item.userName}</p>
@@ -192,14 +194,10 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
           <span>{bookmarks}</span>
         </Button>
 
-        <Button
-          variant="outline"
-          className="gap-1 rounded-full border-gray-300 hover:bg-gray-100 flex items-center"
-          onClick={() => session ? onShare?.(item.id) : router.push("/login")}
-        >
-          <Share className="h-3 w-3 text-gray-400" />
-          Share
-        </Button>
+        <ShareButton
+                        title={item.title}
+                        url={window.location.href}
+                        />
       </div>
     </div>
   );
