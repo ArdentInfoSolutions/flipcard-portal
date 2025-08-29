@@ -68,6 +68,7 @@ export default function ProfilePage() {
               <div>
                 <h2 className="text-2xl font-bold">{user.name}</h2>
                 <p className="text-muted-foreground">{user.email}</p>
+                <p className="text-muted-foreground">{user.place}</p>
               </div>
             </div>
             <Button variant="outline" size="icon" onClick={() => router.push("/profile/edit")}>

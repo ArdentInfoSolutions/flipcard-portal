@@ -107,12 +107,12 @@ import Image from 'next/image'
       {/* Top Section (Image with overlay text) */}
       <div className="relative">
         <Image
-          src={post.videothumb || "/placeholderbg.png"}
-          alt="Preview Missing"
-          width={350}
-          height={200}
-          className="w-full h-[200px] object-cover"
-        />
+  src={post.videothumb || "/placeholderbg.png"}
+  alt="Preview Missing"
+  width={350}
+  height={200}
+  className="w-full h-[200px] object-contain bg-black rounded-md"
+/>
         
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col justify-center px-4">
           {(post.promo && 

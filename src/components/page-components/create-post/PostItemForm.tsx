@@ -226,11 +226,48 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
         <div>
           <Label>Upload Image<span style={{ color: 'red' }}>*</span> & URL Link</Label>
           {imageItems.map((item, index) => (
-            <div key={index} className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full">
-              <Input type="file" accept="image/*" onChange={(e) => setImageItems((prev) => prev.map((it, i) => i === index ? { ...it, file: e.target.files?.[0] || null } : it))} />
-              <Input className="flex-1" placeholder="URL Link" value={item.url} onChange={(e) => setImageItems((prev) => prev.map((it, i) => i === index ? { ...it, url: e.target.value } : it))} />
-              <Button type="button" variant="ghost" size="icon" onClick={() => setImageItems((prev) => prev.filter((_, i) => i !== index))}>❌</Button>
-            </div>
+            
+            <div
+                key={index}
+                className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full"
+              >
+                <div className="flex-1 flex gap-2 w-full">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    className="flex-1"
+                    onChange={(e) =>
+                      setImageItems((prev) =>
+                        prev.map((it, i) =>
+                          i === index ? { ...it, file: e.target.files?.[0] || null } : it
+                        )
+                      )
+                    }
+                  />
+                  <Input
+                    className="flex-1"
+                    placeholder="URL Link"
+                    value={item.url}
+                    onChange={(e) =>
+                      setImageItems((prev) =>
+                        prev.map((it, i) =>
+                          i === index ? { ...it, url: e.target.value } : it
+                        )
+                      )
+                    }
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="self-start md:self-center"
+                  onClick={() => setImageItems((prev) => prev.filter((_, i) => i !== index))}
+                >
+                  ❌
+                </Button>
+              </div>
+
           ))}
           <Button type="button" className="mt-2" onClick={() => setImageItems((prev) => [...prev, { file: null, url: "" }])}>➕ Add More Images</Button>
         </div>
