@@ -50,12 +50,18 @@ export function ShareButton({ title, url }: { title: string; url: string }) {
       }
     }
   };
+  const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    handleShare();
+  };
 
   return (
     <Button
       variant="outline"
       size="icon"
-      onClick={handleShare}
+      onClick={onClick}
       className="flex items-center"
     >
       <Share2 className="h-4 w-4" />
