@@ -17,7 +17,7 @@ import {
 } from "@/features/actions-bookmark-post/bookmarkPostSelectors";
 import { useAppSelector } from "@/redux/hooks";
 
-function getSafeUrl(url?: string): string | null {
+export function getSafeUrl(url?: string): string | null {
   if (!url) return null;
   try {
     return new URL(url.startsWith("http") ? url : `https://${url}`).href;

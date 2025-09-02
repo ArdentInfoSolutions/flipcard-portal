@@ -17,7 +17,7 @@ import { useRef } from "react";
 interface PostType {
     id: string;
     title: string;
-    description: string;
+    description?: string;
     images?: { url: string; title?: string }[];
     links_or_images?: (string | { url: string })[];
 }

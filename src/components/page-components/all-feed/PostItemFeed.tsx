@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "../../../redux/hooks";
 import { PostItem } from "./PostItem";
+import { getSafeUrl } from "./PostItem";
 import { WebItemsSkeleton } from "../skeletons/web-items-skeleton";
 import { likePost } from "@/features/actions-like-post/likePostThunks";
 import { bookmarkPost } from "@/features/actions-bookmark-post/bookmarkPostThunks";
@@ -13,7 +14,7 @@ export interface PostItemType {
   id: string;
   title: string;
   url: string;
-  description: string;
+  description?: string;
   userName: string;
   userLogo: string;
   images?: { url: string; title?: string }[];
@@ -30,6 +31,8 @@ export interface PostItemType {
   videos?: any[];
   createdAt?: string;
   videothumb?: string;
+  videosurl?: string;
+
 }
 
 export function PostItemFeed() {
@@ -122,6 +125,19 @@ export function PostItemFeed() {
       </div>
     );
 
+    const handlePostClick = (item: PostItemType) => {
+
+    if (item.postType === "images") {
+      setSelectedPost(item);
+    } else if (item.postType === "videos" && item.videosurl) {
+      const safeUrl = getSafeUrl(item.videosurl);
+      if (safeUrl) {
+        window.open(safeUrl, "_blank");
+      }
+    }
+  };
+
+
   return (
     <div className="w-full max-w-3xl mx-auto space-y-6 mt-6">
       {postItems.map((item) => (
@@ -157,16 +173,17 @@ export function PostItemFeed() {
           onLike={() => dispatch(likePost(item.id))}
           onBookmark={() => dispatch(bookmarkPost(item.id))}
           onShare={() => console.log("Share:", item.id)}
-          onClick={() => setSelectedPost(item)} // 👈 add this
+          onClick={() => handlePostClick(item)} // 👈 add this
 
         />
       ))}
-      {selectedPost && (
-        <ImagePostDetail
-          post={selectedPost}
-          onClose={() => setSelectedPost(null)}
-        />
-      )}
+      
+      {selectedPost && selectedPost.postType === "images" && (
+      <ImagePostDetail
+        post={selectedPost}
+        onClose={() => setSelectedPost(null)}
+      />
+    )}
     </div>
   );
 }
