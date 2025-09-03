@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Bookmark, Heart, Share } from "lucide-react";
+import { Bookmark, Heart, Share , Eye} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PostItem as PostItemType } from "../../../lib/types";
 import { useSession } from "next-auth/react";
@@ -113,7 +113,6 @@ export function PostItem({ item, onLike, onBookmark, onShare, onClick }: PostIte
           )}
         </div>
       </div>
-
       {/* Title + PostType */}
       <div className="flex items-center justify-between flex-wrap gap-1 mb-1">
         <h3 className="text-base sm:text-lg font-bold">{item.title}</h3>
@@ -169,12 +168,10 @@ export function PostItem({ item, onLike, onBookmark, onShare, onClick }: PostIte
             session ? onBookmark?.(item.id) : router.push("/login");
           }}
         >
-          <Bookmark
-            className={`h-3 w-3 ${
-              isBookmarked ? "text-blue-500 fill-blue-500" : "text-gray-400"
-            }`}
-          />
-          <span>{bookmarks}</span>
+          <div className="flex items-center gap-1 text-gray-500">
+            <Eye className="h-3 w-3" />
+            <span>{item.viewcount ?? 0}</span>
+          </div>
         </Button>
             <div onClick={(e) => e.stopPropagation()}>
                <ShareButton

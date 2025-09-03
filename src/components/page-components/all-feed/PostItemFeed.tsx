@@ -32,6 +32,7 @@ export interface PostItemType {
   createdAt?: string;
   videothumb?: string;
   videosurl?: string;
+  viewcount : number;
 
 }
 
@@ -64,6 +65,7 @@ export function PostItemFeed() {
           let isBookmarked = post.isBookmarked ?? false;
           let createdAt = post.createdAt ?? "";
           let videothumb = post.videothumb ?? "";
+          let viewcount = post.viewcount ?? 0;
 
           if (postType === "web") {
             url = post.links_or_images?.[0]?.url || "";
@@ -103,6 +105,7 @@ export function PostItemFeed() {
                   ? "videos"
                   : undefined,
                   videothumb,
+                  viewcount,
           };
         });
 
@@ -125,7 +128,7 @@ export function PostItemFeed() {
       </div>
     );
 
-    const handlePostClick = (item: PostItemType) => {
+    const handlePostClick = async (item: PostItemType) => {
 
     if (item.postType === "images") {
       setSelectedPost(item);
@@ -135,6 +138,16 @@ export function PostItemFeed() {
         window.open(safeUrl, "_blank");
       }
     }
+    const payload: any = {
+        viewcount: item.viewcount + 1,
+        
+      };
+
+      const res = await fetch(`/api/postitem/${item.id}/views`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
   };
 
 
