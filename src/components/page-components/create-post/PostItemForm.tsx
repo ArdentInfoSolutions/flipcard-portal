@@ -116,9 +116,10 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
         payload.thumbnail = imagesBase64[0].base64;
         payload.videoweburl = videoItems.url;
         payload.isShortvideo = isShortVideo;
-        payload.user_name = session.user.name || "";
       }
       if (postType === "images") payload.images = imagesBase64;
+        payload.user_name = session.user.name || "";
+
 
       const res = await fetch("/api/postitem", {
         method: "POST",

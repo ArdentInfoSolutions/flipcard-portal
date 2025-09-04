@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Bookmark, Heart, Share } from "lucide-react";
+import { Bookmark, Heart, Share , Eye} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PostItem as PostItemType } from "../../../lib/types";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import {ShareButton} from  "../../common/ShareButton";
 import {
   selectIsPostLiked,
   selectPostLikes,
@@ -16,7 +17,7 @@ import {
 } from "@/features/actions-bookmark-post/bookmarkPostSelectors";
 import { useAppSelector } from "@/redux/hooks";
 
-function getSafeUrl(url?: string): string | null {
+export function getSafeUrl(url?: string): string | null {
   if (!url) return null;
   try {
     return new URL(url.startsWith("http") ? url : `https://${url}`).href;
@@ -55,9 +56,11 @@ interface PostItemProps {
   onLike?: (id: string) => void;
   onBookmark?: (id: string) => void;
   onShare?: (id: string) => void;
+  onClick?: (item: PostItemType) => void; // 👈 change here
+
 }
 
-export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
+export function PostItem({ item, onLike, onBookmark, onShare, onClick }: PostItemProps) {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -84,13 +87,23 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
   }
 
   return (
-    <div className="bg-blue border border-gray-200 rounded-xl shadow-md p-3 max-w-3xl mx-auto w-full">
-      {/* User */}
+    <div
+      className="bg-blue border border-gray-200 rounded-xl shadow-md p-3 max-w-3xl mx-auto w-full cursor-pointer"
+      onClick={() => onClick?.(item)} // 👈 whole card clickable
+    >
+      {/* User (should NOT trigger ImagePostDetail) */}
       <div
-        onClick={() => router.push(`/profile/${item.id}`)}
+        onClick={(e) => {
+          e.stopPropagation();
+          router.push(`/profile/${item.id}`);
+        }}
         className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded p-1 select-none mb-2"
       >
-        <UserAvatar userLogo={item.photo || item.userLogo} userName={item.userName ?? "User"} size={36} />
+        <UserAvatar
+          userLogo={item.photo || item.userLogo}
+          userName={item.userName ?? "User"}
+          size={36}
+        />
         <div>
           <p className="font-semibold text-xs">{item.userName}</p>
           {item.createdAt && (
@@ -100,30 +113,16 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
           )}
         </div>
       </div>
-
       {/* Title + PostType */}
       <div className="flex items-center justify-between flex-wrap gap-1 mb-1">
-        <h3 className="text-base sm:text-lg font-bold">
-          {safeUrl ? ( 
-          <a href={safeUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-            {item.title}
-          </a>
-          ): (
-          <span>{item.title}</span>
-          )}
-          </h3>
-        {item.postType && (item.videothumb != "") && (
+        <h3 className="text-base sm:text-lg font-bold">{item.title}</h3>
+        {item.postType && item.videothumb && (
           <span className="w-full sm:w-28 h-48 sm:h-28 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
-            
-            <img 
-            src= {item.videothumb}
-            alt="Preview Missing"
-            width={128}
-            height={128}
-            className="w-full h-full object-cover"
-                
+            <img
+              src={item.videothumb}
+              alt="Preview Missing"
+              className="w-full h-full object-cover"
             />
-            
           </span>
         )}
       </div>
@@ -133,20 +132,15 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
         <div className="flex-1 text-sm text-gray-700 leading-tight break-words">
           {item.description}
           {safeUrl && (
-            <a
-              href={safeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-[10px] text-blue-500 underline break-words mt-1"
-            >
+            <span className="block text-[10px] text-blue-500 underline break-words mt-1">
               {hostname}
               {safeUrl.includes("/") &&
                 ` › ${safeUrl.split("/").filter(Boolean).slice(-1)[0]}`}
-            </a>
+            </span>
           )}
         </div>
 
-        {(item.postType === "images" ) &&
+        {item.postType === "images" &&
           (item.images?.[0]?.url || item.links_or_images?.[0]) && (
             <div className="w-full sm:w-28 h-48 sm:h-28 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
               <Image
@@ -159,49 +153,36 @@ export function PostItem({ item, onLike, onBookmark, onShare }: PostItemProps) {
                 width={128}
                 height={128}
                 className="w-full h-full object-cover"
-                
               />
             </div>
           )}
       </div>
 
-      {/* Tags */}
-      {item.postType === "web" && (item.categories?.length ?? 0) > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {item.categories?.map((cat, i) => (
-            <span
-              key={i}
-              className="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
-            >
-              {cat}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Action Buttons */}
+      {/* Action Buttons (don’t trigger ImagePostDetail) */}
       <div className="flex flex-wrap gap-4 text-gray-600 text-xs mt-3">
-        
-
         <Button
           variant="outline"
           className="gap-1 rounded-full border-gray-300 hover:bg-gray-100 flex items-center"
-          onClick={() => session ? onBookmark?.(item.id) : router.push("/login")}
+          onClick={(e) => {
+            e.stopPropagation();
+            session ? onBookmark?.(item.id) : router.push("/login");
+          }}
         >
-          <Bookmark className={`h-3 w-3 ${isBookmarked ? "text-blue-500 fill-blue-500" : "text-gray-400"}`} />
-          <span>{bookmarks}</span>
+          <div className="flex items-center gap-1 text-gray-500">
+            <Eye className="h-3 w-3" />
+            <span>{item.viewcount ?? 0}</span>
+          </div>
         </Button>
-
-        <Button
-          variant="outline"
-          className="gap-1 rounded-full border-gray-300 hover:bg-gray-100 flex items-center"
-          onClick={() => session ? onShare?.(item.id) : router.push("/login")}
-        >
-          <Share className="h-3 w-3 text-gray-400" />
-          Share
-        </Button>
+            <div onClick={(e) => e.stopPropagation()}>
+               <ShareButton
+                title={item.title}
+                url={safeUrl || window.location.href}
+              />
+            </div>
+       
       </div>
     </div>
   );
 }
+
 
