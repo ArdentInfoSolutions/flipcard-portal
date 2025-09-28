@@ -9,7 +9,7 @@ export interface PostItem {
   userLogo?: string;
   userName?: string;
   title: string;
-  promo?: string;
+  promo?: boolean;
   description?: string;
   url: string;
   categories?: string[];
@@ -26,6 +26,7 @@ export interface PostItem {
   photo?: string;
   createdAt: string;
   type?: 'image' | 'video' | 'web' | 'text';
+  viewcount : number;
   
 }
 

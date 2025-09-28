@@ -53,6 +53,7 @@ function UserAvatar({
 
 interface PostItemProps {
   item: PostItemType;
+  relatedPosts?: PostItemType[];
   onLike?: (id: string) => void;
   onBookmark?: (id: string) => void;
   onShare?: (id: string) => void;
@@ -60,7 +61,7 @@ interface PostItemProps {
 
 }
 
-export function PostItem({ item, onLike, onBookmark, onShare, onClick }: PostItemProps) {
+export function PostItem({ item,relatedPosts, onLike, onBookmark, onShare, onClick }: PostItemProps) {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -181,7 +182,29 @@ export function PostItem({ item, onLike, onBookmark, onShare, onClick }: PostIte
             </div>
        
       </div>
+      {relatedPosts && relatedPosts.length > 0 && (
+  <div className="mt-3 border-t pt-2">
+    <p className="text-xs text-gray-500 mb-2">Related Posts</p>
+    <div className="flex flex-wrap gap-2">
+      {relatedPosts.slice(0, 3).map((rp) => (
+        <Button
+          key={rp.id}
+          variant="outline"
+          size="sm"
+          className="rounded-full text-xs"
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/posts/${rp.id}`);
+          }}
+        >
+          {rp.title.length > 20 ? rp.title.slice(0, 20) + "…" : rp.title}
+        </Button>
+      ))}
     </div>
+  </div>
+)}
+    </div>
+    
   );
 }
 

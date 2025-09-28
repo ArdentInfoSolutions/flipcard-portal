@@ -35,6 +35,13 @@ export interface PostItemType {
   viewcount : number;
 
 }
+function getRelatedPosts(post: PostItemType, all: PostItemType[]) {
+  return all.filter(
+    (p) =>
+      p.id !== post.id &&
+      p.categories?.some((tag) => post.categories?.includes(tag))
+  );
+}
 
 export function PostItemFeed() {
   const dispatch = useAppDispatch();
@@ -97,7 +104,7 @@ export function PostItemFeed() {
             isBookmarked,
             createdAt,
             userLogo,
-            promo: !!post.promo,
+            promo: post.promo ?? false,
             showIn:
               postType === "images"
                 ? "images"
@@ -177,12 +184,14 @@ export function PostItemFeed() {
                   ? "videos"
                   : "web",
             createdAt: item.createdAt ?? "",
-            promo:
-              typeof item.promo === "boolean" ? String(item.promo) : item.promo,
+            //promo:
+             // typeof item.promo === "boolean" ? String(item.promo) : item.promo,
+             promo: !!item.promo,
             links_or_images: item.links_or_images
               ? item.links_or_images.map((l) => (typeof l === "string" ? l : l.url))
               : undefined,
           }}
+          relatedPosts={getRelatedPosts(item, postItems)}
           onLike={() => dispatch(likePost(item.id))}
           onBookmark={() => dispatch(bookmarkPost(item.id))}
           onShare={() => console.log("Share:", item.id)}
