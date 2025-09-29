@@ -99,81 +99,93 @@ import Image from 'next/image'
   };
 
   // Convert videos array properly
-  const videos = post.links_or_images?.map((v) =>
-    typeof v === "string" ? { url: v } : v
-  ) ?? [];
+  const videos =
+    post.links_or_images?.map((v) =>
+      typeof v === "string" ? { url: v } : v
+    ) ?? [];
+
   return (
-    <div className="max-w-sm rounded-lg shadow-lg overflow-hidden border border-gray-200">
-      {/* Top Section (Image with overlay text) */}
-      <div className="relative">
-        <Image
-  src={post.videothumb || "/placeholderbg.png"}
-  alt="Preview Missing"
-  width={350}
-  height={200}
-  className="w-full h-[200px] object-contain bg-black rounded-md"
-/>
-        
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex flex-col justify-center px-4">
-          {(post.promo && 
-          <button className="bg-white text-black font-semibold px-4 py-1 rounded-full text-sm w-fit">
-            {post.promo}
-          </button>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      {/* Header (user info, matches image feed style) */}
+      <div className="p-4 flex items-center">
+        <img
+          src={post.userLogo || "/placeholder-user.png"}
+          alt={post.userName}
+          className="w-10 h-10 rounded-full mr-3"
+        />
+        <div className="flex flex-col">
+          <span className="font-semibold text-sm">{post.userName}</span>
+          {post.createdAt && (
+            <span className="text-xs text-gray-500">
+              {new Date(post.createdAt).toLocaleDateString()}
+            </span>
           )}
         </div>
-        {/* AI badge icon */}
-        
       </div>
 
-      {/* Bottom Section (Details) */}
-      <div className="p-4">
-       
-        {/* Description */}
-      {post.description && (
-        <p className="text-sm font-semibold">{post.description}</p>
-      )}
-      
-        <div className="flex items-center space-x-3 mt-1">
-          <img
-            src={post.userLogo || "/placeholder-user.png"}
-            alt={post.userName}
-            className="w-10 h-10 rounded-full"
-          />
-          <div>
-            {post.title && (
-              <h2 className="text-gray-500 text-l font-bold">
-                {post.title}
-                <span className="text-yellow-400"></span>
-              </h2>
-            )}
-          </div>
-        </div>
-          <p className="text-xs text-gray-500 mt-1">
-          {post.userName}  • {post.createdAt && new Date(post.createdAt).toLocaleDateString()}</p>
+      {/* Media (video thumbnail or video) */}
+      <div className="relative w-full h-[220px] bg-black">
+        <Image
+          src={post.videothumb || "/placeholderbg.png"}
+          alt="Preview Missing"
+          width={800}
+          height={400}
+          className="w-full h-full object-cover"
+        />
 
-        {/* Action buttons */}
-        <div className="flex gap-2 mt-3">
-          <a
-            href={post.videosurl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 bg-gray-100 text-black rounded-full py-1 text-sm font-medium hover:bg-gray-200 text-center"
-          >
-            Watch
+        {/* Promo badge overlay */}
+        {post.promo && (
+          <div className="absolute top-2 left-2">
+            <button className="bg-white text-black font-semibold px-3 py-1 rounded-full text-xs">
+              {post.promo}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Content (title + description) */}
+      <div className="px-4 pt-3">
+        {post.title && (
+          <h2 className="text-sm font-bold mb-1 line-clamp-2">
+            {post.title}
+          </h2>
+        )}
+        {post.description && (
+          <p className="text-xs text-muted-foreground line-clamp-2">
+            {post.description}
+          </p>
+        )}
+      </div>
+
+      {/* Action buttons (kept as-is, just moved to bottom like image feed) */}
+      <div className="p-4 flex gap-2">
+        <a
+          href={post.videosurl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 bg-gray-100 text-black rounded-full py-1 text-sm font-medium hover:bg-gray-200 text-center"
+        >
+          Watch
         </a>
-          <a
-          href={post.videoweburl ? (post.videoweburl.startsWith("http") ? post.videoweburl : `https://${post.videoweburl}`) : "#"}
+        <a
+          href={
+            post.videoweburl
+              ? post.videoweburl.startsWith("http")
+                ? post.videoweburl
+                : `https://${post.videoweburl}`
+              : "#"
+          }
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 bg-blue-600 text-white rounded-full py-1 text-sm font-medium hover:bg-blue-700 text-center"
         >
           Visit Site
         </a>
-        </div>
       </div>
     </div>
-  )
+  );
 }
+
 
 function VideoPostCard({ post }: { post: PostItemType }) {
   const [likes, setLikes] = useState(post.likes);
@@ -261,73 +273,4 @@ function VideoPostCard({ post }: { post: PostItemType }) {
     </div>
   );
 }
-
-
-
-
-// "use client"
-
-// import { useEffect } from "react"
-// import { useAppDispatch, useAppSelector } from "../../../redux/hooks"
-// import { fetchVideoPostItems } from "../../../features/video-posts/videoPostsThunks"
-// import { selectVideoPostItems, selectVideoPostsLoading, selectVideoPostsError } from "../../../features/video-posts/videoPostsSelectors"
-// import { ImageItemsSkeleton } from "../skeletons/image-items-skeleton"
-// import { VideoPostItem } from "./VideoPostItem"
-// import { likePost } from "@/features/actions-like-post/likePostThunks"
-// import { bookmarkPost } from "@/features/actions-bookmark-post/bookmarkPostThunks"
-
-// export function VideoItemsFeed() {
-//   const dispatch = useAppDispatch()
-//   const videoItems = useAppSelector(selectVideoPostItems)
-//   const loading = useAppSelector(selectVideoPostsLoading)
-//   const error = useAppSelector(selectVideoPostsError)
-
-//   useEffect(() => {
-//     dispatch(fetchVideoPostItems())
-//   }, [dispatch])
-
-//   if (loading) {
-//     return (
-//       <ImageItemsSkeleton/>
-//     )
-//   }
-
-//   if (error) {
-//     return (
-//       <div className="w-full max-w-3xl mx-auto p-4">
-//         <div className="text-red-500">Error: {error}</div>
-//       </div>
-//     )
-//   }
-
-//   return (
-//     <main className="flex flex-col items-center">
-
-//       <div className="w-full max-w-6xl mx-auto p-8">
-//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-//           {videoItems.map((post) => (
-//             <VideoPostItem
-//               key={post.id}
-//               post={post}
-//               onLike={(id) => dispatch(likePost(id))}
-//               onBookmark={(id) => dispatch(bookmarkPost(id))}
-//             />
-//           ))}
-//         </div>
-//       </div>
-//     </main>
-//   )
-// //   return (
-//     // <div className="w-full max-w-3xl mx-auto divide-y">
-//     //   {imageItems.map((item) => (
-//     //     <PostCarousel
-//     //     key={item.id}
-//     //     post={item}
-//     //     onLike={(id) => console.log("Like:", id)}
-//     //     onBookmark={(id) => console.log("Bookmark:", id)}
-//     //   />
-//     //   ))}
-//     // </div>
-// //   )
-// }
 
