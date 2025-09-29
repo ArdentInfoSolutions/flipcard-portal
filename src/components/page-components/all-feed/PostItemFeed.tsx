@@ -15,7 +15,7 @@ export interface PostItemType {
   title: string;
   url: string;
   description?: string;
-  userName: string;
+  userName?: string;
   userLogo: string;
   images?: { url: string; title?: string }[];
   showIn?: "images" | "videos";
@@ -144,6 +144,13 @@ export function PostItemFeed() {
       if (safeUrl) {
         window.open(safeUrl, "_blank");
       }
+      
+    }
+    else if (item.postType === "web" && item.url) {
+      const safeUrl = getSafeUrl(item.url);
+      if (safeUrl) {
+        window.open(safeUrl, "_blank");
+      }
     }
     const payload: any = {
         viewcount: item.viewcount + 1,
@@ -196,6 +203,7 @@ export function PostItemFeed() {
           onBookmark={() => dispatch(bookmarkPost(item.id))}
           onShare={() => console.log("Share:", item.id)}
           onClick={() => handlePostClick(item)} // 👈 add this
+          onRelatedClick={(rp) => handlePostClick(rp)} 
 
         />
       ))}

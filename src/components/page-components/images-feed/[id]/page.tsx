@@ -24,7 +24,7 @@ interface PostType {
     images?: { url: string; title?: string }[];
     links_or_images?: (string | { url: string })[];
     url: string;
-    user_name: string;
+    user_name?: string;
 }
 
 export default function ImagePostDetail({
