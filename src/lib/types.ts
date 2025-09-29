@@ -26,6 +26,8 @@ export interface PostItem {
   photo?: string;
   createdAt: string;
   type?: 'image' | 'video' | 'web' | 'text';
+  videothumb?: string;
+  videosurl?: string;
   viewcount : number;
   
 }

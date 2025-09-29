@@ -11,7 +11,7 @@ export interface PostItemType {
   title: string;
   url: string;
   description: string;
-  userName: string;
+  userName?: string;
   userLogo?: string;
   images?: { url: string; title?: string }[];
   showIn?: "images" | "videos";

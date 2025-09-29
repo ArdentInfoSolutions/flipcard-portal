@@ -58,10 +58,12 @@ interface PostItemProps {
   onBookmark?: (id: string) => void;
   onShare?: (id: string) => void;
   onClick?: (item: PostItemType) => void; // 👈 change here
+  onRelatedClick?: (item: PostItemType) => void; // 👈 new
+
 
 }
 
-export function PostItem({ item,relatedPosts, onLike, onBookmark, onShare, onClick }: PostItemProps) {
+export function PostItem({ item,relatedPosts, onLike, onBookmark, onShare, onClick, onRelatedClick }: PostItemProps) {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -193,8 +195,8 @@ export function PostItem({ item,relatedPosts, onLike, onBookmark, onShare, onCli
           size="sm"
           className="rounded-full text-xs"
           onClick={(e) => {
-            e.stopPropagation();
-            router.push(`/posts/${rp.id}`);
+           e.stopPropagation();
+            onRelatedClick?.(rp);
           }}
         >
           {rp.title.length > 20 ? rp.title.slice(0, 20) + "…" : rp.title}
