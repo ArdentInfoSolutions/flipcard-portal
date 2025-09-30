@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Check } from "lucide-react"; // or any icon you like
+
 
 type PostType = "web" | "videos" | "images";
 
@@ -32,7 +34,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
   const [isShortVideo, setIsShortVideo] = useState(false);
 
   const [imageItems, setImageItems] = useState<{ file: File | null; url: string }[]>([{ file: null, url: "" }]);
-  const [videoItems, setVideoItems] = useState<{ videoUrl: string; url: string }[]>([{ videoUrl: "", url: "" }]);
+  const [videoItems, setVideoItems] = useState<{ videoUrl: string; url: string }>({ videoUrl: "", url: "" });
 
   const handleAddCategory = () => {
     if (newCategory.trim()) {
@@ -71,11 +73,11 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
     if (!title.trim()) return alert("Title is required");
     if (postType !== "videos" && !description.trim()) return alert("Description is required");
-    if (categories.length === 0) return alert("Add at least one category");
+   // if (categories.length === 0) return alert("Add at least one category");
     if (postType === "web" && links.length === 0) return alert("Add at least one link");
     if (postType === "images" && imageItems.filter((item) => item.file).length === 0)
       return alert("Upload at least one image");
-    if (postType === "videos" && videoItems.filter((v) => v.videoUrl.trim()).length === 0)
+    if (postType === "videos" && videoItems.videoUrl.trim().length === 0)
       return alert("Add at least one video URL");
 
     try {
@@ -86,7 +88,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
       let imagesBase64: { base64: string; url: string }[] = [];
       let videos: { videoUrl: string; url: string }[] = [];
-
+      
       if (postType === "images" || postType === "videos") {
         imagesBase64 = await Promise.all(
           imageItems.map(async (item) => {
@@ -109,11 +111,15 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
       if (postType === "web") payload.webLinks = links;
       if (postType === "videos") {
-        payload.videos = videos;
-        payload.thumbnail = imagesBase64[0];
+        //payload.videos = videos;
+        payload.videosurl = videoItems.videoUrl;
+        payload.thumbnail = imagesBase64[0].base64;
+        payload.videoweburl = videoItems.url;
         payload.isShortvideo = isShortVideo;
       }
       if (postType === "images") payload.images = imagesBase64;
+        payload.user_name = session.user.name || "";
+
 
       const res = await fetch("/api/postitem", {
         method: "POST",
@@ -138,13 +144,18 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       setCategories([]);
       setLinks([]);
       setImageItems([{ file: null, url: "" }]);
-      setVideoItems([{ videoUrl: "", url: "" }]);
+      setVideoItems({ videoUrl: "", url: "" });
+      setIsShortVideo(false);
     } catch (error) {
       alert("❌ Error: " + (error as Error).message);
       console.error("Submit error:", error);
     }
   };
 
+  const handleToggle = () => {
+    setIsShortVideo(prev => !prev);
+    console.log("Short Video Selected:", !isShortVideo);
+  };
   return (
     <form onSubmit={handleSubmit} className="relative space-y-6 p-4 max-w-2xl w-full mx-auto bg-white rounded shadow-md">
       <button
@@ -154,19 +165,28 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       >
         Close
       </button>
+      
 
       <div className="flex flex-wrap items-center gap-4">
         <Label>Post Type: {postType.toUpperCase()}</Label>
 
         {postType === "videos" && (
-          <Button type="button" variant="outline" className="px-4 py-1 text-sm">
-            Short Video
-          </Button>
+         <Button
+      type="button"
+      onClick={handleToggle}
+      variant="outline"
+      className={`group flex items-center gap-2 px-4 py-2 text-sm rounded-lg border transition-colors duration-200
+        ${isShortVideo ? "border-blue-600 bg-blue-50 text-blue-700" : "bg-white text-gray-800"}
+        hover:border-blue-400`}
+    >
+      {isShortVideo && <Check className="w-4 h-4 text-blue-600" />}
+      Short Video
+    </Button>
         )}
       </div>
 
       <div>
-        <Label>Title</Label>
+        <Label>Title<span style={{ color: 'red' }}>*</span></Label>
         <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
       </div>
 
@@ -179,7 +199,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
       {postType !== "videos" && (
         <div>
-          <Label>Description</Label>
+          <Label>Description<span style={{ color: 'red' }}>*</span></Label>
           <Textarea rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
       )}
@@ -205,13 +225,50 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
 
       {postType === "images" && (
         <div>
-          <Label>Upload Image & URL Link</Label>
+          <Label>Upload Image<span style={{ color: 'red' }}>*</span> & URL Link</Label>
           {imageItems.map((item, index) => (
-            <div key={index} className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full">
-              <Input type="file" accept="image/*" onChange={(e) => setImageItems((prev) => prev.map((it, i) => i === index ? { ...it, file: e.target.files?.[0] || null } : it))} />
-              <Input className="flex-1" placeholder="URL Link" value={item.url} onChange={(e) => setImageItems((prev) => prev.map((it, i) => i === index ? { ...it, url: e.target.value } : it))} />
-              <Button type="button" variant="ghost" size="icon" onClick={() => setImageItems((prev) => prev.filter((_, i) => i !== index))}>❌</Button>
-            </div>
+            
+            <div
+                key={index}
+                className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full"
+              >
+                <div className="flex-1 flex gap-2 w-full">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    className="flex-1"
+                    onChange={(e) =>
+                      setImageItems((prev) =>
+                        prev.map((it, i) =>
+                          i === index ? { ...it, file: e.target.files?.[0] || null } : it
+                        )
+                      )
+                    }
+                  />
+                  <Input
+                    className="flex-1"
+                    placeholder="URL Link"
+                    value={item.url}
+                    onChange={(e) =>
+                      setImageItems((prev) =>
+                        prev.map((it, i) =>
+                          i === index ? { ...it, url: e.target.value } : it
+                        )
+                      )
+                    }
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="self-start md:self-center"
+                  onClick={() => setImageItems((prev) => prev.filter((_, i) => i !== index))}
+                >
+                  ❌
+                </Button>
+              </div>
+
           ))}
           <Button type="button" className="mt-2" onClick={() => setImageItems((prev) => [...prev, { file: null, url: "" }])}>➕ Add More Images</Button>
         </div>
@@ -220,7 +277,7 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
       {postType === "videos" && (
         <div className="space-y-4">
           <div>
-            <Label>Upload Thumbnail</Label>
+            <Label>Upload Thumbnail<span style={{ color: 'red' }}>*</span></Label>
             <Input type="file" accept="image/*" onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) {
@@ -230,15 +287,45 @@ export default function PostItemForm({ showIn }: PostItemFormProps) {
           </div>
 
           <div>
-            <Label>Video URL, Link & Short Toggle</Label>
-            {videoItems.map((item, index) => (
-              <div key={index} className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full">
-                <Input className="flex-1" placeholder="Video URL" value={item.videoUrl} onChange={(e) => setVideoItems((prev) => prev.map((it, i) => i === index ? { ...it, videoUrl: e.target.value } : it))} />
-                <Input className="flex-1" placeholder="Website URL" value={item.url} onChange={(e) => setVideoItems((prev) => prev.map((it, i) => i === index ? { ...it, url: e.target.value } : it))} />
-                <Button type="button" variant="ghost" size="icon" onClick={() => setVideoItems((prev) => prev.filter((_, i) => i !== index))}>❌</Button>
-              </div>
-            ))}
-            <Button type="button" className="mt-2" onClick={() => setVideoItems((prev) => [...prev, { videoUrl: "", url: "" }])}>➕ Add More Videos</Button>
+            <Label>Video URL, Link & Short Toggle<span style={{ color: 'red' }}>*</span></Label>
+            <div className="flex flex-col md:flex-row gap-2 mt-2 items-center w-full">
+  <Input
+    className="flex-1"
+    placeholder="Video URL"
+    value={videoItems.videoUrl}
+    onChange={(e) =>
+      setVideoItems((prev) => ({
+        ...prev,
+        videoUrl: e.target.value,
+      }))
+    }
+  />
+  <Input
+    className="flex-1"
+    placeholder="Website URL"
+    value={videoItems.url}
+    onChange={(e) =>
+      setVideoItems((prev) => ({
+        ...prev,
+        url: e.target.value,
+      }))
+    }
+  />
+  <Button
+    type="button"
+    variant="ghost"
+    size="icon"
+    onClick={() =>
+      setVideoItems({
+        videoUrl: "",
+        url: "",
+      })
+    }
+  >
+    ❌
+  </Button>
+</div>
+
           </div>
         </div>
       )}

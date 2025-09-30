@@ -11,7 +11,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, UserIcon, LogInIcon, LogOutIcon } from "lucide-react";
+
 import ThemeSwitcher from "./ThemeSwitcher";
 
 export default function NavBar() {
@@ -28,63 +29,74 @@ export default function NavBar() {
 
   return (
     <nav className="flex justify-between items-center p-4 border-b">
-      <div className="flex items-center">
-        <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo.jpg-3bwoBW07eVo16olC2qW6v8UxtYYdUL.jpeg"
-          alt="Flipcard Logo"
-          width={40}
-          height={40}
-          className="dark:invert"
-        />
-        <span className="ml-2 text-xl font-bold">Flipcard Portal</span>
-      </div>
+  <div className="flex items-center">
+    <Link href="/" passHref>
+    <div className="flex items-center cursor-pointer">
+      <Image
+        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo.jpg-3bwoBW07eVo16olC2qW6v8UxtYYdUL.jpeg"
+        alt="Flipcard Logo"
+        width={40}
+        height={40}
+        className="dark:invert"
+      />
+      <span className="ml-2 text-xl font-bold">Flipcard Portal</span>
+    </div>
+  </Link>
+  </div>
 
-      <div className="flex space-x-2 items-center">
-        {session && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="mr-2">
-                <PlusIcon className="h-4 w-4 mr-1" />
-                Create
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem onClick={() => handleCreate("website")}>
-                Website
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleCreate("web")}>
-                Web Post
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleCreate("images")}>
-                Image Post
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleCreate("videos")}>
-                Video Post
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+  <div className="flex space-x-2 items-center">
+    {session && (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="mr-2">
+            {/* Mobile: Show icon only, Desktop: Show icon + text */}
+            <PlusIcon className="h-4 w-4" />
+            <span className="hidden sm:inline ml-1">Create</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem onClick={() => handleCreate("website")}>
+            Website
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleCreate("web")}>
+            Web Post
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleCreate("images")}>
+            Image Post
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleCreate("videos")}>
+            Video Post
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )}
 
-        <Link href="/" passHref>
-          <Button variant="ghost">Home</Button>
+    {/* Removed Home button */}
+
+    {session ? (
+      <>
+        <Link href="/profile" passHref>
+          <Button variant="ghost">
+            <UserIcon className="h-4 w-4" />
+            <span className="hidden sm:inline ml-1">Profile</span>
+          </Button>
         </Link>
+        <Button variant="ghost" onClick={() => signOut()}>
+          <LogOutIcon className="h-4 w-4" />
+          <span className="hidden sm:inline ml-1">Logout</span>
+        </Button>
+      </>
+    ) : (
+      <Link href="/login" passHref>
+        <Button variant="default">
+          <LogInIcon className="h-4 w-4" />
+          <span className="hidden sm:inline ml-1">Login</span>
+        </Button>
+      </Link>
+    )}
+  </div>
+</nav>
 
-        {session ? (
-          <>
-            <Link href="/profile" passHref>
-              <Button variant="ghost">Profile</Button>
-            </Link>
-            <Button variant="ghost" onClick={() => signOut()}>
-              Logout
-            </Button>
-          </>
-        ) : (
-          <Link href="/login" passHref>
-            <Button variant="default">Login</Button>
-          </Link>
-        )}
-      </div>
-    </nav>
   );
 }
 

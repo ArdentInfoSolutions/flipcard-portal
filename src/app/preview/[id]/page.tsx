@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { ExternalLinkIcon } from "lucide-react";
 import { ChevronRightIcon } from "lucide-react";
+import {ShareButton} from  "../../../components/common/ShareButton";
 
 interface WebsiteData {
     websiteName: string;
@@ -24,6 +25,8 @@ interface WebsiteData {
         link: string;
         description?: string;
     }[];
+    privacy_policy?:string;
+    googleMapsLink?:string;
 }
 const handleScrollRight = () => {
     const container = document.getElementById("image-container");
@@ -85,6 +88,8 @@ export default function PreviewPage() {
         logo,
         images = [],
         topPages = [],
+        privacy_policy,
+        googleMapsLink,
     } = websiteData;
     console.log("Fetched Data:", websiteData);
 
@@ -121,11 +126,20 @@ export default function PreviewPage() {
                     </div>
 
                     <div className="mt-4 flex gap-4">
-                        <button className="bg-green-500 text-white px-4 py-2 rounded flex items-center gap-2">
-                            Visit <ExternalLinkIcon size={16} />
-                        </button>
-                        <button className=" text-green px-4 py-2 rounded">Share</button>
+                       <a
+                         href={topPages[0].link?.startsWith("http") ? topPages[0].link : `https://${topPages[0].link}`}
 
+                        target="_blank"
+                        rel="noreferrer"
+                        className="bg-green-500 text-white px-4 py-2 rounded flex items-center gap-2"
+                        >
+                        Visit <ExternalLinkIcon size={16} />
+                        </a>
+
+                <ShareButton
+                title={websiteName}
+                url={window.location.href}
+                />
                     </div>
                 </div>
             </div>
@@ -290,14 +304,21 @@ export default function PreviewPage() {
                         <div className="flex items-start gap-3 mb-3">
                             <span className="text-gray-600 text-lg"><i className="fas fa-user-shield"></i></span>
                             <div>
-                                <p className="text-sm font-medium text-gray-700">📍 Privacy Policy</p>
+                                <p>
+                                <a href={privacy_policy} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                          
+className="text-sm text-blue-600 hover:underline pl-6"
+                                >📍 Privacy Policy</a>
+                                </p>
                             </div>
                         </div>
 
                         {/* About the Developer */}
                         <div className="mt-5">
                             <p className="text-sm font-medium text-gray-800 mb-1">About the developer</p>
-                            <p className="text-sm text-gray-900">Meesho Inc.</p>
+                            <p className="text-sm text-gray-900">{websiteName}</p>
                             <p className="text-sm text-gray-700">{email}</p>
                             <p className="text-sm text-gray-700">{address}</p>
 

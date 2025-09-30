@@ -103,10 +103,14 @@ export async function POST(req: NextRequest) {
       postType,
       categories,
       webLinks,
-      videos,
+      videosurl,
       images,
       userId,
-      profilePhoto, // from frontend (session)
+      profilePhoto,
+      isShortvideo,
+      user_name,
+      thumbnail,
+      videoweburl, // from frontend (session)
     } = body;
 
     if (!userId) {
@@ -137,12 +141,12 @@ export async function POST(req: NextRequest) {
     if (postType === "web") {
       content = webLinks;
     } else if (postType === "videos") {
-      content = await Promise.all(
+      /*content = await Promise.all(
         videos.map(async (item: any) => ({
           videoUrl: await uploadToCloudinaryUrl(item.videoUrl),
           url: item.url,
         }))
-      );
+      );*/
     } else if (postType === "images") {
       content = await Promise.all(
         images.map(async (item: any) => ({
@@ -151,12 +155,14 @@ export async function POST(req: NextRequest) {
         }))
       );
     }
-
+    
     // 💾 Insert post into DB
     const result = await query(
       `INSERT INTO postitem 
-      (title, promo, description, post_type, categories, links_or_images, user_id, profile_photo)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      (title, promo, description, post_type, categories, links_or_images, user_id, profile_photo,is_short_video,user_name,
+      videosurl,
+        videoweburl,videothumb)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10,$11,$12,$13)
       RETURNING *`,
       [
         title,
@@ -167,6 +173,11 @@ export async function POST(req: NextRequest) {
         JSON.stringify(content),
         userId,
         finalPhoto,
+        isShortvideo,
+        user_name,
+        videosurl,
+        videoweburl,
+        thumbnail,
       ]
     );
 

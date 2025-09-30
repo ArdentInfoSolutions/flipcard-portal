@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import "swiper/css";
 import { Heart, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ImagePostDetail from "./[id]/page";
@@ -14,7 +11,7 @@ export interface PostItemType {
   title: string;
   url: string;
   description: string;
-  userName: string;
+  userName?: string;
   userLogo?: string;
   images?: { url: string; title?: string }[];
   showIn?: "images" | "videos";
@@ -93,8 +90,6 @@ function ImagePostCard({
   post: PostItemType;
   onSelect: () => void;
 }) {
-  const swiperRef = useRef<any>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
   const [likes, setLikes] = useState(post.likes);
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [bookmarks, setBookmarks] = useState(post.bookmarks);
@@ -104,10 +99,10 @@ function ImagePostCard({
     post.images && post.images.length > 0
       ? post.images
       : post.links_or_images?.map((img) =>
-        typeof img === "string" ? { url: img } : img
-      ) ?? [];
+          typeof img === "string" ? { url: img } : img
+        ) ?? [];
 
-  const loopEnabled = images.length > 1;
+  const firstImage = images[0];
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -133,48 +128,28 @@ function ImagePostCard({
         <span className="font-semibold text-sm truncate">{post.userName}</span>
       </div>
 
-      {/* Swiper Carousel */}
-      <div
-        className="relative w-full h-[220px] sm:h-[260px] md:h-[280px] lg:h-[300px] cursor-pointer"
-        onClick={onSelect}
-      >
-        {/* Progress Bars */}
-        <div className="absolute top-2 left-0 w-full flex px-4 space-x-1 z-10">
-          {images.map((_, index) => (
-            <div
-              key={index}
-              className="flex-1 h-1 bg-gray-500/30 rounded-full overflow-hidden"
-            >
-              <div
-                className={`h-full transition-all duration-[3000ms] ${activeIndex === index ? "bg-white w-full" : "bg-transparent w-0"
-                  }`}
-              ></div>
-            </div>
-          ))}
-        </div>
-
-        <Swiper
-          modules={[Autoplay]}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
-          loop={loopEnabled}
-          onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-          onSwiper={(swiper) => (swiperRef.current = swiper)}
-          className="w-full h-full"
+      {/* First Image Only */}
+      {firstImage && (
+        <div
+          className="relative w-full h-[220px] sm:h-[260px] md:h-[280px] lg:h-[300px] cursor-pointer"
+          onClick={onSelect}
         >
-          {images.map((image, index) => (
-            <SwiperSlide key={index} className="flex justify-center items-center">
-              <Image
-                src={image.url}
-                alt={image.title || `Slide ${index + 1}`}
-                width={800}
-                height={400}
-                className="w-full h-full object-cover"
-                unoptimized={image.url.startsWith("http")}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+          <Image
+            src={firstImage.url}
+            alt={firstImage.title || post.title}
+            width={800}
+            height={400}
+            className="w-full h-full object-cover"
+            unoptimized={firstImage.url.startsWith("http")}
+          />
+
+          {images.length > 1 && (
+            <span className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+              +{images.length - 1}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Title & Description */}
       <div className="px-4 pt-3">
@@ -184,15 +159,7 @@ function ImagePostCard({
 
       {/* Actions */}
       <div className="p-4 flex justify-between items-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleLike}
-          className={isLiked ? "text-red-500" : "text-gray-500"}
-        >
-          <Heart className={`h-4 w-4 ${isLiked ? "fill-red-500" : ""}`} />
-          <span className="ml-1 text-sm">{likes}</span>
-        </Button>
+        
         <Button
           variant="ghost"
           size="sm"
