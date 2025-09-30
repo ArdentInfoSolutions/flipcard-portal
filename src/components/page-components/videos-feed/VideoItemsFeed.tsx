@@ -65,17 +65,16 @@ export function VideoItemsFeed() {
   if (error) return <div className="p-4 text-red-600">Error: {error}</div>;
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
-      {videoPosts.length === 0 && <p>No video posts found.</p>}
+  <>
+    {videoPosts.length === 0 && <p>No video posts found.</p>}
 
-      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {videoPosts.map((post) => (
-          <VideoPostCardExtended key={post.id} post={post} />
-        ))}
-      </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+      {videoPosts.map((post) => (
+        <VideoPostCardExtended key={post.id} post={post} />
+      ))}
     </div>
-
-  );
+  </>
+);
 }
 
 
@@ -124,7 +123,7 @@ import Image from 'next/image'
       </div>
 
       {/* Media (video thumbnail or video) */}
-      <div className="relative w-full h-[220px] bg-black">
+      <div className="relative w-full h-[240px] sm:h-[280px] md:h-[300px] lg:h-[320px]">
         <Image
           src={post.videothumb || "/placeholderbg.png"}
           alt="Preview Missing"
