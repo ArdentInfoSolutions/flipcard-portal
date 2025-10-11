@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Bookmark, Heart, Share , Eye} from "lucide-react";
+import { Bookmark, Heart, Share, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PostItem as PostItemType } from "../../../lib/types";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import {ShareButton} from  "../../common/ShareButton";
+import { ShareButton } from "../../common/ShareButton";
 import {
   selectIsPostLiked,
   selectPostLikes,
@@ -17,6 +17,7 @@ import {
 } from "@/features/actions-bookmark-post/bookmarkPostSelectors";
 import { useAppSelector } from "@/redux/hooks";
 
+// --- Utility: Ensure valid external URLs
 export function getSafeUrl(url?: string): string | null {
   if (!url) return null;
   try {
@@ -26,6 +27,7 @@ export function getSafeUrl(url?: string): string | null {
   }
 }
 
+// --- Avatar helper
 function UserAvatar({
   userLogo,
   userName,
@@ -46,7 +48,6 @@ function UserAvatar({
       onError={(e) => {
         (e.currentTarget as HTMLImageElement).src = fallbackUrl;
       }}
-      
     />
   );
 }
@@ -57,13 +58,19 @@ interface PostItemProps {
   onLike?: (id: string) => void;
   onBookmark?: (id: string) => void;
   onShare?: (id: string) => void;
-  onClick?: (item: PostItemType) => void; // 👈 change here
-  onRelatedClick?: (item: PostItemType) => void; // 👈 new
-
-
+  onClick?: (item: PostItemType) => void;
+  onRelatedClick?: (item: PostItemType) => void;
 }
 
-export function PostItem({ item,relatedPosts, onLike, onBookmark, onShare, onClick, onRelatedClick }: PostItemProps) {
+export function PostItem({
+  item,
+  relatedPosts,
+  onLike,
+  onBookmark,
+  onShare,
+  onClick,
+  onRelatedClick,
+}: PostItemProps) {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -75,7 +82,6 @@ export function PostItem({ item,relatedPosts, onLike, onBookmark, onShare, onCli
   const likes = useAppSelector((state) =>
     selectPostLikes(state, item.id, item.likes ?? 0)
   );
-
   const isBookmarked = useAppSelector((state) =>
     selectIsBookmarked(state, item.id, item.isBookmarked ?? false)
   );
@@ -91,10 +97,10 @@ export function PostItem({ item,relatedPosts, onLike, onBookmark, onShare, onCli
 
   return (
     <div
-      className="bg-blue border border-gray-200 rounded-xl shadow-md p-3 max-w-3xl mx-auto w-full cursor-pointer"
-      onClick={() => onClick?.(item)} // 👈 whole card clickable
+      className="bg-white border border-gray-200 rounded-xl shadow-sm p-3 max-w-3xl mx-auto w-full cursor-pointer hover:shadow-md transition-shadow"
+      onClick={() => onClick?.(item)}
     >
-      {/* User (should NOT trigger ImagePostDetail) */}
+      {/* User info */}
       <div
         onClick={(e) => {
           e.stopPropagation();
@@ -116,52 +122,85 @@ export function PostItem({ item,relatedPosts, onLike, onBookmark, onShare, onCli
           )}
         </div>
       </div>
-      {/* Title + PostType */}
-      <div className="flex items-center justify-between flex-wrap gap-1 mb-1">
-        <h3 className="text-base sm:text-lg font-bold">{item.title}</h3>
-        {item.postType && item.videothumb && (
-          <span className="w-full sm:w-28 h-48 sm:h-28 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
-            <img
-              src={item.videothumb}
-              alt="Preview Missing"
-              className="w-full h-full object-cover"
+
+      {/* Title */}
+      <h3 className="text-base sm:text-lg font-bold mb-2">{item.title}</h3>
+
+      {/* === MEDIA SECTION (Video or Image) === */}
+      {item.postType === "videos" && item.videothumb && (
+  <div
+    className="relative w-full h-[240px] sm:h-[280px] md:h-[300px] lg:h-[320px] mb-3 cursor-pointer"
+    onClick={(e) => {
+      e.stopPropagation();
+      onClick?.(item); // 👈 ensures click on thumbnail or play opens the video
+    }}
+  >
+    {/* Video Thumbnail */}
+    <Image
+      src={item.videothumb || "/placeholderbg.png"}
+      alt="Video Thumbnail"
+      fill
+      className="object-cover rounded-lg"
+    />
+
+    {/* Play Overlay */}
+    <div className="absolute inset-0 flex items-center justify-center z-20">
+      <div className="bg-black/50 hover:bg-black/60 rounded-full p-4 sm:p-5 transition">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-8 h-8 sm:w-10 sm:h-10 text-white"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </div>
+    </div>
+
+    {/* Promo Tag */}
+    {item.promo && (
+      <div
+        className="absolute top-2 left-2 z-30"
+        onClick={(e) => e.stopPropagation()} // prevent promo click from opening video
+      >
+        <button className="bg-white text-black font-semibold px-3 py-1 rounded-full text-xs shadow">
+          {item.promo}
+        </button>
+      </div>
+    )}
+  </div>
+)}
+
+
+      {item.postType === "images" &&
+        (item.images?.[0]?.url || item.links_or_images?.[0]) && (
+          <div className="relative w-full h-[240px] sm:h-[280px] md:h-[300px] lg:h-[320px] mb-3 rounded-lg overflow-hidden border border-gray-200">
+            <Image
+              src={
+                item.images?.[0]?.url ||
+                item.links_or_images?.[0] ||
+                "/placeholder.svg"
+              }
+              alt={item.title || "Post Image"}
+              fill
+              className="object-cover"
             />
+          </div>
+        )}
+
+      {/* Description */}
+      <div className="text-sm text-gray-700 leading-tight break-words mb-2">
+        {item.description}
+        {safeUrl && (
+          <span className="block text-[10px] text-blue-500 underline break-words mt-1">
+            {hostname}
+            {safeUrl.includes("/") &&
+              ` › ${safeUrl.split("/").filter(Boolean).slice(-1)[0]}`}
           </span>
         )}
       </div>
 
-      {/* Content */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-2">
-        <div className="flex-1 text-sm text-gray-700 leading-tight break-words">
-          {item.description}
-          {safeUrl && (
-            <span className="block text-[10px] text-blue-500 underline break-words mt-1">
-              {hostname}
-              {safeUrl.includes("/") &&
-                ` › ${safeUrl.split("/").filter(Boolean).slice(-1)[0]}`}
-            </span>
-          )}
-        </div>
-
-        {item.postType === "images" &&
-          (item.images?.[0]?.url || item.links_or_images?.[0]) && (
-            <div className="w-full sm:w-28 h-48 sm:h-28 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
-              <Image
-                src={
-                  item.images?.[0]?.url ||
-                  item.links_or_images?.[0] ||
-                  "/placeholder.svg"
-                }
-                alt={item.title || "Post Image"}
-                width={128}
-                height={128}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-      </div>
-
-      {/* Action Buttons (don’t trigger ImagePostDetail) */}
+      {/* Actions */}
       <div className="flex flex-wrap gap-4 text-gray-600 text-xs mt-3">
         <Button
           variant="outline"
@@ -176,38 +215,34 @@ export function PostItem({ item,relatedPosts, onLike, onBookmark, onShare, onCli
             <span>{item.viewcount ?? 0}</span>
           </div>
         </Button>
-            <div onClick={(e) => e.stopPropagation()}>
-               <ShareButton
-                title={item.title}
-                url={safeUrl || window.location.href}
-              />
-            </div>
-       
+
+        <div onClick={(e) => e.stopPropagation()}>
+          <ShareButton title={item.title} url={safeUrl || window.location.href} />
+        </div>
       </div>
+
+      {/* Related posts */}
       {relatedPosts && relatedPosts.length > 0 && (
-  <div className="mt-3 border-t pt-2">
-    <p className="text-xs text-gray-500 mb-2">Related Posts</p>
-    <div className="flex flex-wrap gap-2">
-      {relatedPosts.slice(0, 3).map((rp) => (
-        <Button
-          key={rp.id}
-          variant="outline"
-          size="sm"
-          className="rounded-full text-xs"
-          onClick={(e) => {
-           e.stopPropagation();
-            onRelatedClick?.(rp);
-          }}
-        >
-          {rp.title.length > 20 ? rp.title.slice(0, 20) + "…" : rp.title}
-        </Button>
-      ))}
+        <div className="mt-3 border-t pt-2">
+          <p className="text-xs text-gray-500 mb-2">Related Posts</p>
+          <div className="flex flex-wrap gap-2">
+            {relatedPosts.slice(0, 3).map((rp) => (
+              <Button
+                key={rp.id}
+                variant="outline"
+                size="sm"
+                className="rounded-full text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRelatedClick?.(rp);
+                }}
+              >
+                {rp.title.length > 20 ? rp.title.slice(0, 20) + "…" : rp.title}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-    </div>
-    
   );
 }
-
-

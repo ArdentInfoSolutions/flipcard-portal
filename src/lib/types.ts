@@ -9,7 +9,7 @@ export interface PostItem {
   userLogo?: string;
   userName?: string;
   title: string;
-  promo?: boolean;
+  promo?: string;
   description?: string;
   url: string;
   categories?: string[];

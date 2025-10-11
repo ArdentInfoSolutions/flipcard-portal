@@ -25,7 +25,7 @@ export interface PostItemType {
   isLiked: boolean;
   bookmarks: number;
   isBookmarked: boolean;
-  promo?: boolean;
+  promo?: string;
   categories?: string[];
   pages?: any[];
   videos?: any[];
@@ -104,7 +104,7 @@ export function PostItemFeed() {
             isBookmarked,
             createdAt,
             userLogo,
-            promo: post.promo ?? false,
+            promo: post.promo ?? "",
             showIn:
               postType === "images"
                 ? "images"
@@ -193,7 +193,7 @@ export function PostItemFeed() {
             createdAt: item.createdAt ?? "",
             //promo:
              // typeof item.promo === "boolean" ? String(item.promo) : item.promo,
-             promo: !!item.promo,
+             promo: item.promo,
             links_or_images: item.links_or_images
               ? item.links_or_images.map((l) => (typeof l === "string" ? l : l.url))
               : undefined,
